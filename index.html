@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Mobile Suit Clash: The Pit OS V3.2</title>
+<style>
+  :root {
+    --bg-base: #06080d;
+    --panel-bg: #0d111a;
+    --panel-border: #1a2233;
+    --term-cyan: #00f0ff;
+    --term-gold: #ffb700;
+    --term-red: #ff3366;
+    --term-green: #00ff66;
+    --term-purple: #bd00ff;
+    --text-dim: #70829b;
+    --text-bright: #e3edf7;
+    
+    --r0-color: #8c9ba5;
+    --r1-color: #00e676;
+    --r2-color: #00b0ff;
+    --r3-color: #d500f9;
+    --r4-color: #ff9100;
+    --r5-color: #ff1744;
+  }
+
+  * { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    font-family: -apple-system, 'Consolas', 'Courier New', monospace; 
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body {
+    background: var(--bg-base); 
+    color: var(--text-bright); 
+    min-height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Scanline effect adjusted for mobile performance */
+  body::before {
+    content: " "; 
+    display: block; 
+    position: fixed; 
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+    z-index: 999; 
+    background-size: 100% 3px; 
+    pointer-events: none;
+  }
+
+  /* Header / HUD */
+  header {
+    background: #090d14; 
+    border-bottom: 2px solid var(--term-cyan);
+    padding: 10px 12px; 
+    display: flex; 
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); 
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .os-brand { 
+    font-size: 13px; 
+    font-weight: bold; 
+    color: var(--term-cyan); 
+    text-shadow: 0 0 8px var(--term-cyan); 
+    letter-spacing: 1px; 
+  }
+
+  .hud-stats { 
+    display: flex; 
+    gap: 6px; 
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .hud-stats::-webkit-scrollbar { display: none; }
+
+  .hud-tag { 
+    background: rgba(0,0,0,0.6); 
+    border: 1px solid var(--panel-border); 
+    padding: 3px 8px; 
+    border-radius: 2px; 
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .hud-tag span { font-weight: bold; }
+  .hud-credits { color: var(--term-gold); }
+  .hud-scrap { color: var(--term-cyan); }
+  .hud-glory { color: var(--term-purple); }
+
+  /* Navigation Bar - Horizontally Scrollable on iPhone */
+  nav { 
+    display: flex; 
+    background: var(--panel-bg); 
+    border-bottom: 1px solid var(--panel-border); 
+    overflow-x: auto;
+    white-space: nowrap;
+    position: sticky;
+    top: 68px;
+    z-index: 99;
+    -webkit-overflow-scrolling: touch;
+  }
+  nav::-webkit-scrollbar { display: none; }
+
+  .nav-btn {
+    flex: 0 0 auto; 
+    padding: 10px 14px; 
+    background: transparent; 
+    border: none; 
+    border-right: 1px solid var(--panel-border);
+    color: var(--text-dim); 
+    font-size: 11px; 
+    text-transform: uppercase; 
+    cursor: pointer; 
+    transition: 0.15s; 
+    letter-spacing: 1px;
+  }
+  .nav-btn:active, .nav-btn.active {
+    background: rgba(0, 240, 255, 0.15); 
+    color: var(--term-cyan);
+    border-bottom: 2px solid var(--term-cyan); 
+    box-shadow: inset 0 -4px 10px rgba(0,240,255,0.3);
+  }
+
+  /* Main Workspace */
+  main { 
+    padding: 12px; 
+    display: block;
+    min-height: calc(100vh - 120px);
+    padding-bottom: 60px; /* Buffer for Safari bottom nav bar */
+  }
+
+  .view-tab { 
+    display: none; 
+    width: 100%; 
+    flex-direction: column;
+    gap: 12px; 
+  }
+  .view-tab.active { 
+    display: flex; 
+  }
+
+  /* Panels */
+  .panel {
+    background: var(--panel-bg); 
+    border: 1px solid var(--panel-border); 
+    border-radius: 3px;
+    padding: 12px; 
+    display: flex; 
+    flex-direction: column; 
+    position: relative;
+    width: 100%;
+  }
+
+  .panel-header {
+    font-size: 12px; 
+    font-weight: bold; 
+    color: var(--term-gold); 
+    text-transform: uppercase;
+    letter-spacing: 1px; 
+    padding-bottom: 8px; 
+    margin-bottom: 10px; 
+    border-bottom: 1px dashed var(--panel-border);
+    display: flex; 
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .panel-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  /* Buttons */
+  button.action-btn {
+    background: rgba(0, 240, 255, 0.05); 
+    border: 1px solid var(--term-cyan); 
+    color: var(--term-cyan);
+    padding: 8px 12px; 
+    cursor: pointer; 
+    text-transform: uppercase; 
+    font-size: 11px; 
+    font-weight: bold; 
+    transition: 0.15s;
+    border-radius: 2px;
+  }
+  button.action-btn:active:not(:disabled) { 
+    background: var(--term-cyan); 
+    color: #000; 
+  }
+  button.action-btn:disabled { 
+    border-color: #333; 
+    color: #555; 
+  }
+
+  button.gold-btn { border-color: var(--term-gold); color: var(--term-gold); background: rgba(255, 183, 0, 0.05); }
+  button.gold-btn:active:not(:disabled) { background: var(--term-gold); color: #000; }
+
+  button.red-btn { border-color: var(--term-red); color: var(--term-red); background: rgba(255, 51, 102, 0.05); }
+  button.red-btn:active:not(:disabled) { background: var(--term-red); color: #000; }
+
+  /* Hangar Cards */
+  .hangar-grid { 
+    display: grid; 
+    grid-template-columns: 1fr; 
+    gap: 10px; 
+    width: 100%;
+  }
+
+  @media(min-width: 600px) {
+    .hangar-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  }
+
+  .suit-card {
+    background: #090d14; 
+    border: 1px solid #1c2638; 
+    border-radius: 3px; 
+    padding: 12px;
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px; 
+  }
+  .suit-card.equipped { 
+    border-color: var(--term-green) !important; 
+    box-shadow: 0 0 8px rgba(0, 255, 102, 0.4); 
+  }
+  .suit-name { font-size: 13px; font-weight: bold; }
+  .suit-meta { font-size: 11px; display: flex; justify-content: space-between; color: var(--text-dim); }
+  .suit-stats { 
+    font-size: 11px; 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 6px; 
+    background: rgba(0,0,0,0.4); 
+    padding: 8px; 
+    border-radius: 2px; 
+  }
+
+  /* 1v1 Arena */
+  .arena-stage { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+  .vs-screen { 
+    display: flex; 
+    flex-direction: column;
+    gap: 14px;
+    background: #07090f; 
+    border: 1px solid var(--panel-border); 
+    padding: 14px; 
+    border-radius: 3px; 
+  }
+  .fighter-box { width: 100%; display: flex; flex-direction: column; gap: 6px; text-align: center; }
+  .hp-bar-bg { width: 100%; height: 16px; background: #1a2233; border: 1px solid #334460; border-radius: 2px; overflow: hidden; }
+  .hp-bar-fill { height: 100%; width: 100%; background: var(--term-green); transition: width 0.2s ease; }
+  .combat-log { 
+    height: 180px; 
+    background: #000; 
+    border: 1px solid var(--panel-border); 
+    padding: 10px; 
+    overflow-y: auto; 
+    font-size: 11px; 
+    line-height: 1.6;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Auction Pit */
+  .auction-timer-bg { width: 100%; height: 14px; background: #111824; border: 1px solid var(--term-cyan); }
+  .auction-timer-bar { height: 100%; width: 100%; background: var(--term-cyan); transition: width 0.1s linear; }
+  .bid-log { 
+    height: 220px; 
+    background: #000; 
+    border: 1px solid var(--panel-border); 
+    padding: 10px; 
+    overflow-y: auto; 
+    font-size: 11px; 
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Market */
+  .market-grid { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+  .market-card { background: #080c14; border: 1px solid var(--panel-border); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .fraction-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .fraction-row button { padding: 8px 0; font-size: 11px; }
+
+  /* Toast Alerts */
+  #toast-rack { 
+    position: fixed; 
+    bottom: 20px; 
+    left: 12px;
+    right: 12px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px; 
+    z-index: 1000; 
+    pointer-events: none;
+  }
+  .toast {
+    background: #0d111a; 
+    border-left: 4px solid var(--term-cyan); 
+    color: var(--text-bright);
+    padding: 10px 14px; 
+    font-size: 11px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.8); 
+    animation: slideIn 0.2s, fadeOut 0.4s 3.6s forwards;
+    pointer-events: auto;
+  }
+  @keyframes slideIn { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="os-brand">PIT OS // V3.2</div>
+    <button class="action-btn red-btn" style="padding:4px 8px; font-size:9px;" onclick="godMode()">OVERRIDE</button>
+  </div>
+  <div class="hud-stats">
+    <div class="hud-tag">CREDITS: <span id="hud-credits" class="hud-credits">₢25,000</span></div>
+    <div class="hud-tag">SCRAP: <span id="hud-scrap" class="hud-scrap">500</span></div>
+    <div class="hud-tag">GLORY: <span id="hud-glory" class="hud-glory">0</span></div>
+    <div class="hud-tag">SUITS: <span id="hud-hangar-count" style="color:#fff;">0</span>/666</div>
+  </div>
+</header>
+
+<nav>
+  <button class="nav-btn active" onclick="setTab('hangar')">Hangar Bay</button>
+  <button class="nav-btn" onclick="setTab('procure')">Fabricator</button>
+  <button class="nav-btn" onclick="setTab('arena')">1v1 Arena</button>
+  <button class="nav-btn" onclick="setTab('auction')">Auction</button>
+  <button class="nav-btn" onclick="setTab('exchange')">Exchange</button>
+  <button class="nav-btn" onclick="setTab('database')">Codex (666)</button>
+</nav>
+
+<main>
+  <!-- TAB 1: HANGAR BAY -->
+  <div id="tab-hangar" class="view-tab active">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-header-row">
+          <span>Active Hangar</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+          <button class="action-btn red-btn" style="font-size:10px;" onclick="quickSell(0)">Sell All Common</button>
+          <button class="action-btn red-btn" style="font-size:10px;" onclick="quickSell(1)">Sell Uncommon &lt;</button>
+        </div>
+      </div>
+      <div id="hangar-grid" class="hangar-grid"></div>
+    </div>
+    
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-header-row">
+          <span>Deployed Unit Telemetry</span>
+        </div>
+      </div>
+      <div id="equipped-panel">
+        <div style="text-align:center; padding: 20px; color: var(--text-dim); font-size:12px;">No Mobile Suit deployed to Main Bay.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: FABRICATOR -->
+  <div id="tab-procure" class="view-tab">
+    <div class="panel">
+      <div class="panel-header">Anaheim Orbital Production Foundry</div>
+      <p style="color:var(--text-dim); font-size:11px; margin-bottom:14px; line-height: 1.4;">Construct Mobile Suits from the 666 blueprint archive using capital or reclaimed scrap.</p>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 20px;">
+        <button class="action-btn gold-btn" style="padding:12px;" onclick="fabricate(1)">Construct Suit (₢2,500)</button>
+        <button class="action-btn gold-btn" style="padding:12px;" onclick="fabricate(10)">Assemble Strike Wing x10 (₢22,500)</button>
+        <button class="action-btn" style="padding:12px;" onclick="fabricateScrap()">Forge with Scrap (300 Scrap)</button>
+      </div>
+      <div class="panel-header">Rarity Specifications</div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; text-align:center; font-size:10px;">
+        <div style="background:#000; border:1px solid var(--r0-color); padding:8px;"><span style="color:var(--r0-color)">COMMON</span><br>Tier I (45%)</div>
+        <div style="background:#000; border:1px solid var(--r1-color); padding:8px;"><span style="color:var(--r1-color)">UNCOMMON</span><br>Tier II (30%)</div>
+        <div style="background:#000; border:1px solid var(--r2-color); padding:8px;"><span style="color:var(--r2-color)">RARE</span><br>Tier III (15%)</div>
+        <div style="background:#000; border:1px solid var(--r3-color); padding:8px;"><span style="color:var(--r3-color)">ACE SPEC</span><br>Tier IV (7%)</div>
+        <div style="background:#000; border:1px solid var(--r4-color); padding:8px;"><span style="color:var(--r4-color)">PROTOTYPE</span><br>Tier V (2.5%)</div>
+        <div style="background:#000; border:1px solid var(--r5-color); padding:8px;"><span style="color:var(--r5-color)">SINGULARITY</span><br>Tier VI (0.5%)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: 1V1 ARENA -->
+  <div id="tab-arena" class="view-tab">
+    <div class="arena-stage">
+      <div class="vs-screen">
+        <div class="fighter-box">
+          <div id="p-name" style="font-weight:bold; font-size:13px; color:var(--term-cyan);">NO DEPLOYED UNIT</div>
+          <div class="hp-bar-bg"><div id="p-hp" class="hp-bar-fill"></div></div>
+          <div id="p-stats" style="font-size:10px; color:var(--text-dim);">HP: 0/0 | ATK: 0 | DEF: 0 | SPD: 0</div>
+        </div>
+        <div style="font-size:18px; font-weight:bold; color:var(--term-red); text-align:center;">— VERSUS —</div>
+        <div class="fighter-box">
+          <div id="e-name" style="font-weight:bold; font-size:13px; color:var(--term-red);">RIVAL SUIT</div>
+          <div class="hp-bar-bg"><div id="e-hp" class="hp-bar-fill" style="background:var(--term-red);"></div></div>
+          <div id="e-stats" style="font-size:10px; color:var(--text-dim);">HP: 0/0 | ATK: 0 | DEF: 0 | SPD: 0</div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <button id="btn-battle" class="action-btn red-btn" style="padding:12px;" onclick="startBattle()">Sortie: 1v1 Battle (Fee: ₢1,000)</button>
+        <button id="btn-retreat" class="action-btn" style="padding:8px;" disabled onclick="retreatBattle()">Emergency Eject</button>
+      </div>
+      <div id="combat-log" class="combat-log">
+        <div style="color:var(--text-dim);">[SYSTEM] The Iron Arena is online. Deploy a unit from your Hangar and initiate combat.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: AUCTION -->
+  <div id="tab-auction" class="view-tab">
+    <div class="panel">
+      <div class="panel-header">Colony Black Market Floor</div>
+      <div id="auction-idle" style="text-align:center; padding: 30px 10px;">
+        <p style="color:var(--text-dim); margin-bottom:10px; font-size:12px;">Select an unequipped unit in your Hangar to begin an automated 15-second bidding war.</p>
+        <p style="font-size:10px; color:var(--text-dim);">50 syndicates bid aggressively with erratic spikes from 33% to 33,333%.</p>
+      </div>
+      <div id="auction-active" style="display:none; flex-direction:column; gap:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+          <div>
+            <span style="font-size:9px; color:var(--text-dim); text-transform:uppercase;">Listing Lot:</span>
+            <div id="auc-item-name" style="font-size:14px; font-weight:bold; color:var(--term-gold);">RX-78-2 Gundam</div>
+          </div>
+          <div style="text-align:right;">
+            <span style="font-size:9px; color:var(--text-dim); text-transform:uppercase;">Highest Bid:</span>
+            <div id="auc-item-bid" style="font-size:16px; font-weight:bold; color:var(--term-cyan);">₢0</div>
+          </div>
+        </div>
+        <div class="auction-timer-bg"><div id="auc-bar" class="auction-timer-bar"></div></div>
+        <div id="auc-log" class="bid-log"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 5: RESOURCE EXCHANGE -->
+  <div id="tab-exchange" class="view-tab">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-header-row">
+          <span>Resource Exchange</span>
+          <span style="font-size:9px; color:var(--term-cyan);">Cycle: 30s</span>
+        </div>
+      </div>
+      <div id="market-rows" class="market-grid"></div>
+    </div>
+  </div>
+
+  <!-- TAB 6: DATABASE -->
+  <div id="tab-database" class="view-tab">
+    <div class="panel">
+      <div class="panel-header">
+        <span>Codex Roster (666)</span>
+        <input type="text" id="db-search" placeholder="Filter model..." oninput="filterCodex()" style="background:#000; border:1px solid var(--panel-border); color:#fff; padding:6px 10px; font-size:11px; width:100%; border-radius:2px;">
+      </div>
+      <div id="codex-list" class="hangar-grid"></div>
+    </div>
+  </div>
+</main>
+
+<div id="toast-rack"></div>
+
+<script>
+  /* ================= 666 PROCEDURAL GUNDAM ROSTER ================= */
+  const DESIGNATIONS = [
+    "RX-78","MS-06","MSN-04","RX-93","MSZ-006","MS-09","RGM-79","MS-14","AMX-004","OZ-13MS",
+    "XXXG-00W0","GN-001","ZGMF-X10A","ASW-G-08","GF13-017NJ","Concept-X","System-99","F91","LM314V21","GX-9900",
+    "MSN-06S","RX-0","NZ-666","FA-78","MS-07","RGM-89","RGZ-91","PMX-003","AMX-002","RX-178",
+    "GAT-X105","ZGMF-X20A","GN-0000","ASW-G-11","GNX-603T","SVMS-01","MSN-00100","RMS-099","NRX-044","ORX-005"
+  ];
+  const PREFIXES = [
+    "Proto","Strike","Custom","Heavy","Full Armor","Psycho","Hi-Nu","Banshee","Perfect","Re-GZ",
+    "G-Armor","Sniper","Command","Tactical","Shadow","Ver.Ka","Dual","Blitz","Aegis","Buster",
+    "Justice","Freedom","Destiny","Providence","Exia","Dynames","Kyrios","Virtue","Barbatos","Lupus",
+    "Gusion","Flauros","Bael","Kimaris","Vidar","Tallgeese","Epyon","Deathscythe","Heavyarms","Sandrock",
+    "Shenlong","Altron","Wing Zero","Master","Shining","God","Nobel","Turn A","Turn X","Unicorn"
+  ];
+  const CORES = [
+    "Gundam","Zaku","Sazabi","Nu","Zeta","Dom","GM","Gelgoog","Qubeley","Epyon",
+    "Freedom","Exia","Barbatos","Sinanju","Kshatriya","Banshee","Phenex","Jegan","The-O","Hyaku-Shiki",
+    "Rick Dias","Gouf","Kampfer","Zeong","Tallgeese","Turn-A","V2-Assault","F91","Crossbone","G-Self",
+    "Calibarn","Aerial","Lfrith","Darilbalde","Pharact","Schwarzette","Michaelis","Beguir-Pente","Zowort","Grimgerde"
+  ];
+  const SUFFIXES = [
+    "Prime","MK-II","MK-III","Custom","Origin","Kai","Titan","Dominator","Zero","Infinity",
+    "Eclipse","Recon","Assault","Vanguard","Hazard","Ghost","Specter","Apex","Omega","Final Battle"
+  ];
+
+  const RARITIES = [
+    { name: "Common", color: "var(--r0-color)", mult: 1.0 },
+    { name: "Uncommon", color: "var(--r1-color)", mult: 1.4 },
+    { name: "Rare", color: "var(--r2-color)", mult: 2.0 },
+    { name: "Ace Spec", color: "var(--r3-color)", mult: 3.2 },
+    { name: "Prototype", color: "var(--r4-color)", mult: 5.5 },
+    { name: "Singularity God", color: "var(--r5-color)", mult: 10.0 }
+  ];
+
+  const BIDDER_FACTIONS = [
+    "Anaheim Electronics","Zeon Remnants","Londo Bell","Celestial Being","Tekkadan","Ghiren Faction",
+    "Ecoas Unit","Vist Foundation","Jupiter Empire","Crossbone Vanguard","Buch Junk Guild","Neo Japan",
+    "AUEG Underground","Titans Spec-Ops","Mao Clan","Morgenroete Corp","Actaeon Industries","Gjallarhorn 7 Stars"
+  ];
+
+  let MASTER_CODEX = [];
+  function buildCodex() {
+    let id = 1;
+    for(let d=0; d<DESIGNATIONS.length; d++){
+      for(let p=0; p<PREFIXES.length; p++){
+        for(let c=0; c<CORES.length; c++){
+          if(id > 666) break;
+          let s = SUFFIXES[(d + p + c) % SUFFIXES.length];
+          let rIndex = 0;
+          if(id > 300) rIndex = 1;
+          if(id > 480) rIndex = 2;
+          if(id > 580) rIndex = 3;
+          if(id > 640) rIndex = 4;
+          if(id > 660) rIndex = 5;
+
+          let rData = RARITIES[rIndex];
+          let hp = Math.floor((350 + (id * 4.2)) * rData.mult);
+          let atk = Math.floor((45 + (id * 0.95)) * rData.mult);
+          let def = Math.floor((30 + (id * 0.65)) * rData.mult);
+          let spd = Math.floor((20 + (id * 0.55)) * rData.mult);
+          let val = Math.floor((500 + (id * 45)) * rData.mult * rData.mult);
+
+          MASTER_CODEX.push({
+            id: id,
+            code: `${DESIGNATIONS[d]}-${String(id).padStart(3,'0')}`,
+            name: `${PREFIXES[p]} ${CORES[c]} ${s}`,
+            rarity: rIndex,
+            hp: hp,
+            maxHp: hp,
+            atk: atk,
+            def: def,
+            spd: spd,
+            value: val
+          });
+          id++;
+        }
+        if(id > 666) break;
+      }
+      if(id > 666) break;
+    }
+  }
+  buildCodex();
+
+  /* ================= STATE ================= */
+  let State = {
+    credits: 25000,
+    scrap: 500,
+    glory: 0,
+    hangar: [],
+    equippedId: null,
+    inBattle: false,
+    battleInterval: null,
+    enemySuit: null,
+    market: [
+      { id: "luna-ti", name: "Luna Titanium Alloy", price: 80, base: 80, owned: 10 },
+      { id: "gn-part", name: "GN Particle Drives", price: 420, base: 420, owned: 2 },
+      { id: "psycho", name: "Psychoframe Mesh", price: 1250, base: 1250, owned: 0 },
+      { id: "alraya", name: "Alaya-Vijnana Sensors", price: 2900, base: 2900, owned: 0 }
+    ],
+    auction: {
+      active: false,
+      timer: 150,
+      interval: null,
+      suit: null,
+      currentBid: 0
+    }
+  };
+
+  /* ================= UTILITIES ================= */
+  function fmt(n) { return Math.floor(n).toLocaleString(); }
+  
+  function toast(msg) {
+    const rack = document.getElementById('toast-rack');
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.innerHTML = msg;
+    rack.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+
+  function setTab(tabName) {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+    
+    // Find matching button
+    const btns = Array.from(document.querySelectorAll('.nav-btn'));
+    const matchedBtn = btns.find(b => b.getAttribute('onclick').includes(tabName));
+    if(matchedBtn) {
+      matchedBtn.classList.add('active');
+      matchedBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+
+    const targetTab = document.getElementById(`tab-${tabName}`);
+    if(targetTab) targetTab.classList.add('active');
+
+    if(tabName === 'hangar') renderHangar();
+    if(tabName === 'database') renderCodex();
+    if(tabName === 'exchange') renderMarket();
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateHUD() {
+    document.getElementById('hud-credits').innerText = `₢${fmt(State.credits)}`;
+    document.getElementById('hud-scrap').innerText = fmt(State.scrap);
+    document.getElementById('hud-glory').innerText = fmt(State.glory);
+    document.getElementById('hud-hangar-count').innerText = State.hangar.length;
+    renderEquippedTelemetry();
+  }
+
+  function godMode() {
+    State.credits += 100000000;
+    State.scrap += 50000;
+    State.glory += 10000;
+    toast("OVERRIDE: +100M Credits, +50k Scrap");
+    updateHUD();
+    renderHangar();
+  }
+
+  /* ================= FABRICATION / GACHA ================= */
+  function fabricate(count) {
+    let cost = count === 1 ? 2500 : 22500;
+    if(State.credits < cost) { toast("[ERROR] Insufficient Credits."); return; }
+    State.credits -= cost;
+    for(let i=0; i<count; i++) rollRandomSuit();
+    updateHUD();
+    setTab('hangar');
+  }
+
+  function fabricateScrap() {
+    if(State.scrap < 300) { toast("[ERROR] 300 Scrap required."); return; }
+    State.scrap -= 300;
+    rollRandomSuit();
+    updateHUD();
+    setTab('hangar');
+  }
+
+  function rollRandomSuit() {
+    let roll = Math.random() * 100;
+    let targetRarity = 0;
+    if(roll > 45) targetRarity = 1;
+    if(roll > 75) targetRarity = 2;
+    if(roll > 90) targetRarity = 3;
+    if(roll > 97) targetRarity = 4;
+    if(roll > 99.5) targetRarity = 5;
+
+    let pool = MASTER_CODEX.filter(s => s.rarity === targetRarity);
+    let picked = pool[Math.floor(Math.random() * pool.length)];
+
+    let instance = JSON.parse(JSON.stringify(picked));
+    instance.uid = Date.now() + Math.random().toString(36).substring(2,7);
+    State.hangar.push(instance);
+
+    if(!State.equippedId) State.equippedId = instance.uid;
+    toast(`Forged: <span style="color:${RARITIES[instance.rarity].color}">[${RARITIES[instance.rarity].name}] ${instance.name}</span>`);
+  }
+
+  /* ================= HANGAR BAY & TELEMETRY ================= */
+  function renderHangar() {
+    const grid = document.getElementById('hangar-grid');
+    grid.innerHTML = '';
+    
+    if(State.hangar.length === 0) {
+      grid.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-dim); font-size:12px;">Hangar is empty. Fabricate units to begin.</div>`;
+      renderEquippedTelemetry();
+      return;
+    }
+
+    State.hangar.forEach(s => {
+      let isEq = s.uid === State.equippedId;
+      let r = RARITIES[s.rarity];
+      const card = document.createElement('div');
+      card.className = `suit-card ${isEq ? 'equipped' : ''}`;
+      card.style.borderColor = r.color;
+      card.innerHTML = `
+        <div class="suit-meta">
+          <span>${s.code}</span>
+          <span style="color:${r.color}; font-weight:bold;">${r.name}</span>
+        </div>
+        <div class="suit-name" style="color:${r.color};">${s.name}</div>
+        <div class="suit-stats">
+          <span>HP: ${fmt(s.hp)}</span>
+          <span>ATK: ${fmt(s.atk)}</span>
+          <span>DEF: ${fmt(s.def)}</span>
+          <span>SPD: ${fmt(s.spd)}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+          <span style="font-size:11px; color:var(--term-gold); font-weight:bold;">₢${fmt(s.value)}</span>
+          <div style="display:flex; gap:4px;">
+            ${!isEq ? `<button class="action-btn" style="padding:4px 8px; font-size:9px;" onclick="equipSuit('${s.uid}')">Deploy</button>` : ''}
+            <button class="action-btn gold-btn" style="padding:4px 8px; font-size:9px;" onclick="initAuction('${s.uid}')">Auction</button>
+            <button class="action-btn red-btn" style="padding:4px 8px; font-size:9px;" onclick="scrapSuit('${s.uid}')">Scrap</button>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+    renderEquippedTelemetry();
+  }
+
+  function equipSuit(uid) {
+    State.equippedId = uid;
+    renderHangar();
+    toast("Mobile Suit deployed to cockpit.");
+  }
+
+  function scrapSuit(uid) {
+    if(State.equippedId === uid) State.equippedId = null;
+    let idx = State.hangar.findIndex(s => s.uid === uid);
+    if(idx > -1) {
+      let s = State.hangar[idx];
+      let scrapGain = Math.floor(s.value * 0.08);
+      State.scrap += scrapGain;
+      State.hangar.splice(idx, 1);
+      toast(`Scrapped for +${scrapGain} Scrap.`);
+      updateHUD();
+      renderHangar();
+    }
+  }
+
+  function quickSell(maxRarity) {
+    let toScrap = State.hangar.filter(s => s.rarity <= maxRarity && s.uid !== State.equippedId);
+    if(toScrap.length === 0) { toast("No units eligible for liquidation."); return; }
+    let totalCredits = 0;
+    toScrap.forEach(s => { totalCredits += Math.floor(s.value * 0.65); });
+    State.hangar = State.hangar.filter(s => s.rarity > maxRarity || s.uid === State.equippedId);
+    State.credits += totalCredits;
+    toast(`Liquidated ${toScrap.length} units for +₢${fmt(totalCredits)}.`);
+    updateHUD();
+    renderHangar();
+  }
+
+  function renderEquippedTelemetry() {
+    const p = document.getElementById('equipped-panel');
+    let eq = State.hangar.find(s => s.uid === State.equippedId);
+    if(!eq) {
+      p.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-dim); font-size:12px;">No Mobile Suit deployed to Main Bay.</div>`;
+      return;
+    }
+    let r = RARITIES[eq.rarity];
+    p.innerHTML = `
+      <div style="border-left: 3px solid ${r.color}; padding-left: 8px; margin-bottom:8px;">
+        <div style="font-size:9px; color:${r.color}; text-transform:uppercase;">${r.name} FRAME</div>
+        <div style="font-size:14px; font-weight:bold; color:#fff;">${eq.name}</div>
+        <div style="font-size:10px; color:var(--text-dim);">${eq.code}</div>
+      </div>
+      <div style="background:#000; padding:10px; border:1px solid var(--panel-border); font-size:11px; display:flex; flex-direction:column; gap:6px;">
+        <div style="display:flex; justify-content:space-between;"><span>ARMOR (HP):</span><span style="color:var(--term-green); font-weight:bold;">${fmt(eq.hp)}</span></div>
+        <div style="display:flex; justify-content:space-between;"><span>BEAM ATK:</span><span style="color:var(--term-red); font-weight:bold;">${fmt(eq.atk)}</span></div>
+        <div style="display:flex; justify-content:space-between;"><span>SHIELD DEF:</span><span style="color:var(--term-cyan); font-weight:bold;">${fmt(eq.def)}</span></div>
+        <div style="display:flex; justify-content:space-between;"><span>THRUSTER SPD:</span><span style="color:var(--term-gold); font-weight:bold;">${fmt(eq.spd)}</span></div>
+      </div>
+    `;
+  }
+
+  /* ================= 1V1 ARENA COMBAT ================= */
+  function startBattle() {
+    let player = State.hangar.find(s => s.uid === State.equippedId);
+    if(!player) { toast("[ERROR] Deploy a suit from the Hangar first."); return; }
+    if(State.credits < 1000) { toast("[ERROR] ₢1,000 fee required."); return; }
+    if(State.inBattle) return;
+
+    State.credits -= 1000;
+    updateHUD();
+
+    let rivalPool = MASTER_CODEX.filter(s => Math.abs(s.rarity - player.rarity) <= 1);
+    let rivalTemplate = rivalPool[Math.floor(Math.random() * rivalPool.length)];
+    State.enemySuit = JSON.parse(JSON.stringify(rivalTemplate));
+
+    player.currentHp = player.hp;
+    State.enemySuit.currentHp = State.enemySuit.hp;
+
+    document.getElementById('p-name').innerText = player.name;
+    document.getElementById('p-stats').innerText = `HP: ${fmt(player.currentHp)}/${fmt(player.hp)} | ATK: ${player.atk} | DEF: ${player.def} | SPD: ${player.spd}`;
+    document.getElementById('e-name').innerText = State.enemySuit.name;
+    document.getElementById('e-stats').innerText = `HP: ${fmt(State.enemySuit.currentHp)}/${fmt(State.enemySuit.hp)} | ATK: ${State.enemySuit.atk} | DEF: ${State.enemySuit.def} | SPD: ${State.enemySuit.spd}`;
+
+    document.getElementById('btn-battle').disabled = true;
+    document.getElementById('btn-retreat').disabled = false;
+    document.getElementById('combat-log').innerHTML = '';
+    logCombat("SYS", `Target locked: Rival ${State.enemySuit.name}!`, "#00f0ff");
+
+    State.inBattle = true;
+    State.battleInterval = setInterval(combatRound, 800);
+  }
+
+  function combatRound() {
+    let p = State.hangar.find(s => s.uid === State.equippedId);
+    let e = State.enemySuit;
+    if(!p || !e) { endBattle(); return; }
+
+    let pFirst = p.spd >= e.spd;
+    let actors = pFirst ? [{ atk: p, def: e, isPlayer: true }, { atk: e, def: p, isPlayer: false }] 
+                        : [{ atk: e, def: p, isPlayer: false }, { atk: p, def: e, isPlayer: true }];
+
+    for(let action of actors) {
+      if(action.atk.currentHp <= 0) continue;
+
+      let dmg = Math.max(10, Math.floor((action.atk.atk * (1.2 + Math.random()*0.4)) - (action.def.def * 0.4)));
+      let crit = Math.random() < 0.15;
+      if(crit) dmg = Math.floor(dmg * 1.8);
+
+      action.def.currentHp = Math.max(0, action.def.currentHp - dmg);
+
+      let logColor = action.isPlayer ? "var(--term-cyan)" : "var(--term-red)";
+      let lead = action.isPlayer ? `[YOU] ${action.atk.name}` : `[RIVAL] ${action.atk.name}`;
+      logCombat(lead, `strikes for ${fmt(dmg)} DMG! ${crit ? 'CRITICAL!' : ''}`, logColor);
+
+      updateBattleBars();
+
+      if(action.def.currentHp <= 0) {
+        if(action.isPlayer) {
+          let gloryGain = 25 + (e.rarity * 15);
+          let bounty = Math.floor(e.value * 0.4);
+          State.glory += gloryGain;
+          State.credits += bounty;
+          logCombat("ARENA", `Target annihilated! Rewarded +₢${fmt(bounty)} and +${gloryGain} Glory!`, "var(--term-green)");
+          toast(`VICTORY: +₢${fmt(bounty)}`);
+        } else {
+          logCombat("CRITICAL", `Frame failure! Cockpit ejected safely.`, "var(--term-red)");
+          toast("DEFEAT: Retreated.");
+        }
+        endBattle();
+        return;
+      }
+    }
+  }
+
+  function updateBattleBars() {
+    let p = State.hangar.find(s => s.uid === State.equippedId);
+    let e = State.enemySuit;
+    if(!p || !e) return;
+    let pHpPct = Math.max(0, (p.currentHp / p.hp) * 100);
+    let eHpPct = Math.max(0, (e.currentHp / e.hp) * 100);
+    document.getElementById('p-hp').style.width = pHpPct + '%';
+    document.getElementById('e-hp').style.width = eHpPct + '%';
+    document.getElementById('p-stats').innerText = `HP: ${fmt(p.currentHp)}/${fmt(p.hp)} | ATK: ${p.atk} | DEF: ${p.def} | SPD: ${p.spd}`;
+    document.getElementById('e-stats').innerText = `HP: ${fmt(e.currentHp)}/${fmt(e.hp)} | ATK: ${e.atk} | DEF: ${e.def} | SPD: ${e.spd}`;
+  }
+
+  function retreatBattle() {
+    logCombat("SYS", "Emergency thrusters fired.", "var(--term-gold)");
+    endBattle();
+  }
+
+  function endBattle() {
+    clearInterval(State.battleInterval);
+    State.inBattle = false;
+    document.getElementById('btn-battle').disabled = false;
+    document.getElementById('btn-retreat').disabled = true;
+    updateHUD();
+  }
+
+  function logCombat(tag, txt, col) {
+    const box = document.getElementById('combat-log');
+    const row = document.createElement('div');
+    row.style.marginBottom = '2px';
+    row.innerHTML = `<span style="color:${col}; font-weight:bold;">${tag}:</span> ${txt}`;
+    box.appendChild(row);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  /* ================= 15-SECOND PROCEDURAL AUCTION ================= */
+  function initAuction(uid) {
+    if(State.auction.active) { toast("[ERROR] Auction active."); return; }
+    let sIdx = State.hangar.findIndex(s => s.uid === uid);
+    if(sIdx === -1) return;
+    let suit = State.hangar[sIdx];
+
+    if(State.equippedId === uid) State.equippedId = null;
+    State.hangar.splice(sIdx, 1);
+    updateHUD();
+    renderHangar();
+
+    setTab('auction');
+    document.getElementById('auction-idle').style.display = 'none';
+    document.getElementById('auction-active').style.display = 'flex';
+
+    State.auction.active = true;
+    State.auction.suit = suit;
+    State.auction.timer = 150;
+    State.auction.currentBid = Math.floor(suit.value * 0.33);
+
+    document.getElementById('auc-item-name').innerText = `${suit.name}`;
+    document.getElementById('auc-item-bid').innerText = `₢${fmt(State.auction.currentBid)}`;
+    document.getElementById('auc-log').innerHTML = '';
+
+    logAuction("GAVEL", `Listing ${suit.name}. Starting at ₢${fmt(State.auction.currentBid)}.`, "#fff");
+
+    State.auction.interval = setInterval(auctionTick, 100);
+  }
+
+  function auctionTick() {
+    State.auction.timer--;
+    document.getElementById('auc-bar').style.width = (State.auction.timer / 150 * 100) + '%';
+
+    if(Math.random() < 0.16) {
+      let faction = BIDDER_FACTIONS[Math.floor(Math.random() * BIDDER_FACTIONS.length)];
+      let multiplier = 1.05 + (Math.random() * 0.25);
+
+      if(Math.random() < 0.03) {
+        multiplier = 2.0 + (Math.random() * 8.0);
+        logAuction("FLASH BID", `${faction} enters bidding frenzy!`, "var(--term-red)");
+      }
+      if(State.auction.suit.rarity >= 4 && Math.random() < 0.01) {
+        multiplier = 10.0 + (Math.random() * 33.0);
+        logAuction("WAR", `${faction} bids out the room!`, "var(--term-gold)");
+      }
+
+      State.auction.currentBid = Math.floor(State.auction.currentBid * multiplier);
+      document.getElementById('auc-item-bid').innerText = `₢${fmt(State.auction.currentBid)}`;
+      logAuction(faction, `bids ₢${fmt(State.auction.currentBid)}`, "var(--term-cyan)");
+    }
+
+    if(State.auction.timer <= 0) {
+      clearInterval(State.auction.interval);
+      State.auction.active = false;
+      let finalPayout = State.auction.currentBid;
+      State.credits += finalPayout;
+      logAuction("GAVEL", `SOLD for ₢${fmt(finalPayout)}!`, "var(--term-green)");
+      toast(`SOLD: +₢${fmt(finalPayout)}.`);
+      updateHUD();
+
+      setTimeout(() => {
+        document.getElementById('auction-idle').style.display = 'block';
+        document.getElementById('auction-active').style.display = 'none';
+      }, 3500);
+    }
+  }
+
+  function logAuction(f, txt, col) {
+    const box = document.getElementById('auc-log');
+    const r = document.createElement('div');
+    r.style.marginBottom = '4px';
+    r.innerHTML = `<span style="color:${col}; font-weight:bold;">[${f}]</span> ${txt}`;
+    box.appendChild(r);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  /* ================= RESOURCE EXCHANGE ================= */
+  function renderMarket() {
+    const box = document.getElementById('market-rows');
+    box.innerHTML = '';
+    State.market.forEach((m, idx) => {
+      let div = document.createElement('div');
+      div.className = 'market-card';
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong style="font-size:12px; color:#fff;">${m.name}</strong>
+          <span style="color:var(--term-gold); font-size:12px; font-weight:bold;">₢${fmt(m.price)}</span>
+        </div>
+        <div style="font-size:10px; color:var(--text-dim);">Depot Stock: ${fmt(m.owned)} Units</div>
+        <div style="font-size:9px; color:var(--term-cyan); margin-top:2px;">Procure (Buy)</div>
+        <div class="fraction-row">
+          <button class="action-btn" onclick="tradeResource(${idx}, 'buy', 0.25)">1/4</button>
+          <button class="action-btn" onclick="tradeResource(${idx}, 'buy', 0.5)">1/2</button>
+          <button class="action-btn" onclick="tradeResource(${idx}, 'buy', 0.75)">3/4</button>
+          <button class="action-btn" onclick="tradeResource(${idx}, 'buy', 1)">All</button>
+        </div>
+        <div style="font-size:9px; color:var(--term-gold); margin-top:2px;">Offload (Sell)</div>
+        <div class="fraction-row">
+          <button class="action-btn gold-btn" onclick="tradeResource(${idx}, 'sell', 0.25)">1/4</button>
+          <button class="action-btn gold-btn" onclick="tradeResource(${idx}, 'sell', 0.5)">1/2</button>
+          <button class="action-btn gold-btn" onclick="tradeResource(${idx}, 'sell', 0.75)">3/4</button>
+          <button class="action-btn gold-btn" onclick="tradeResource(${idx}, 'sell', 1)">All</button>
+        </div>
+      `;
+      box.appendChild(div);
+    });
+  }
+
+  function tradeResource(idx, type, frac) {
+    let item = State.market[idx];
+    if(type === 'buy') {
+      let maxAfford = Math.floor(State.credits / item.price);
+      let toBuy = Math.floor(maxAfford * frac);
+      if(toBuy > 0) {
+        let cost = toBuy * item.price;
+        State.credits -= cost;
+        item.owned += toBuy;
+        toast(`Acquired ${toBuy}x ${item.name}`);
+      }
+    } else {
+      let toSell = Math.floor(item.owned * frac);
+      if(toSell > 0) {
+        let rev = toSell * item.price;
+        State.credits += rev;
+        item.owned -= toSell;
+        toast(`Sold ${toSell}x ${item.name}`);
+      }
+    }
+    updateHUD();
+    renderMarket();
+  }
+
+  setInterval(() => {
+    State.market.forEach(m => {
+      let mult = 0.33 + (Math.random() * 3.0);
+      m.price = Math.max(10, Math.floor(m.base * mult));
+    });
+    if(document.getElementById('tab-exchange').classList.contains('active')) renderMarket();
+  }, 30000);
+
+  /* ================= CODEX ARCHIVE ================= */
+  function renderCodex(filter = "") {
+    const list = document.getElementById('codex-list');
+    list.innerHTML = '';
+    let filtered = MASTER_CODEX.filter(s => s.name.toLowerCase().includes(filter.toLowerCase()) || s.code.toLowerCase().includes(filter.toLowerCase()));
+    filtered.slice(0, 60).forEach(s => {
+      let r = RARITIES[s.rarity];
+      let card = document.createElement('div');
+      card.className = 'suit-card';
+      card.style.borderColor = r.color;
+      card.innerHTML = `
+        <div class="suit-meta">
+          <span>${s.code}</span>
+          <span style="color:${r.color}; font-weight:bold;">${r.name}</span>
+        </div>
+        <div class="suit-name" style="color:${r.color};">${s.name}</div>
+        <div class="suit-stats">
+          <span>HP: ${fmt(s.hp)}</span>
+          <span>ATK: ${fmt(s.atk)}</span>
+          <span>DEF: ${fmt(s.def)}</span>
+          <span>SPD: ${fmt(s.spd)}</span>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  function filterCodex() {
+    let q = document.getElementById('db-search').value;
+    renderCodex(q);
+  }
+
+  /* ================= INITIALIZATION ================= */
+  rollRandomSuit();
+  updateHUD();
+</script>
+</body>
+</html>
