@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Mobile Suit Clash: The Pit OS V3.5</title>
+<title>Mobile Suit Clash: The Pit OS V3.6</title>
 <style>
   :root {
     --bg-base: #06080d;
@@ -27,7 +27,13 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, 'Consolas', 'Courier New', monospace; -webkit-tap-highlight-color: transparent; }
-  html, body { background: var(--bg-base); color: var(--text-bright); min-height: 100%; width: 100%; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  
+  /* Mobile-first Flexbox Layout (Fixes iOS sticky overlap bugs) */
+  html, body { 
+    height: 100%; width: 100%; 
+    background: var(--bg-base); color: var(--text-bright); 
+    overflow: hidden; display: flex; flex-direction: column; 
+  }
 
   body::before {
     content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
@@ -36,32 +42,34 @@
   }
 
   header {
-    background: #090d14; border-bottom: 2px solid var(--term-cyan); padding: 10px 12px; 
-    display: flex; flex-direction: column; gap: 8px; box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); 
-    position: sticky; top: 0; z-index: 100;
+    flex-shrink: 0; background: #090d14; border-bottom: 2px solid var(--term-cyan); padding: 10px 12px; 
+    display: flex; flex-direction: column; gap: 8px; box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); z-index: 100;
   }
   .header-top { display: flex; justify-content: space-between; align-items: center; }
   .os-brand { font-size: 13px; font-weight: bold; color: var(--term-cyan); text-shadow: 0 0 8px var(--term-cyan); letter-spacing: 1px; }
 
-  .hud-stats { display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
+  .hud-stats { display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
   .hud-stats::-webkit-scrollbar { display: none; }
-  .hud-tag { background: rgba(0,0,0,0.6); border: 1px solid var(--panel-border); padding: 3px 8px; border-radius: 2px; font-size: 11px; flex-shrink: 0; }
+  .hud-tag { background: rgba(0,0,0,0.6); border: 1px solid var(--panel-border); padding: 4px 8px; border-radius: 2px; font-size: 11px; flex-shrink: 0; }
   .hud-tag span { font-weight: bold; }
   .hud-credits { color: var(--term-gold); }
   .hud-glory { color: var(--term-purple); }
 
   nav { 
-    display: flex; background: var(--panel-bg); border-bottom: 1px solid var(--panel-border); 
-    overflow-x: auto; white-space: nowrap; position: sticky; top: 68px; z-index: 99; -webkit-overflow-scrolling: touch;
+    flex-shrink: 0; display: flex; background: var(--panel-bg); border-bottom: 1px solid var(--panel-border); 
+    overflow-x: auto; white-space: nowrap; z-index: 99; -webkit-overflow-scrolling: touch;
   }
   nav::-webkit-scrollbar { display: none; }
   .nav-btn {
-    flex: 0 0 auto; padding: 10px 14px; background: transparent; border: none; border-right: 1px solid var(--panel-border);
+    flex: 0 0 auto; padding: 12px 14px; background: transparent; border: none; border-right: 1px solid var(--panel-border);
     color: var(--text-dim); font-size: 11px; text-transform: uppercase; cursor: pointer; transition: 0.15s; letter-spacing: 1px;
   }
   .nav-btn:active, .nav-btn.active { background: rgba(0, 240, 255, 0.15); color: var(--term-cyan); border-bottom: 2px solid var(--term-cyan); }
 
-  main { padding: 12px; display: block; min-height: calc(100vh - 120px); padding-bottom: 60px; }
+  main { 
+    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px; 
+    padding-bottom: 60px; /* Safe area for bottom swipe bar */
+  }
   .view-tab { display: none; width: 100%; flex-direction: column; gap: 12px; }
   .view-tab.active { display: flex; }
 
@@ -87,7 +95,7 @@
 
   .hangar-grid { display: grid; grid-template-columns: 1fr; gap: 10px; width: 100%; }
   @media(min-width: 600px) { .hangar-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); } }
-  .suit-card { background: #090d14; border: 1px solid #1c2638; border-radius: 3px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .suit-card { background: #090d14; border: 1px solid #1c2638; border-radius: 3px; padding: 12px; display: flex; flex-direction: column; gap: 8px; position:relative; }
   .suit-card.equipped { border-color: var(--term-green) !important; box-shadow: 0 0 8px rgba(0, 255, 102, 0.4); }
   .suit-name { font-size: 13px; font-weight: bold; }
   .suit-meta { font-size: 11px; display: flex; justify-content: space-between; color: var(--text-dim); }
@@ -110,7 +118,7 @@
   .fraction-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 
   #toast-rack { position: fixed; bottom: 20px; left: 12px; right: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 1000; pointer-events: none; }
-  .toast { background: #0d111a; border-left: 4px solid var(--term-cyan); color: var(--text-bright); padding: 10px 14px; font-size: 11px; box-shadow: 0 4px 15px rgba(0,0,0,0.8); animation: slideIn 0.2s, fadeOut 0.4s 3.6s forwards; pointer-events: auto; }
+  .toast { background: #0d111a; border-left: 4px solid var(--term-cyan); color: var(--text-bright); padding: 12px 14px; font-size: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.8); animation: slideIn 0.2s, fadeOut 0.4s 3.6s forwards; pointer-events: auto; }
   @keyframes slideIn { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
   @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
 </style>
@@ -119,7 +127,7 @@
 
 <header>
   <div class="header-top">
-    <div class="os-brand">PIT OS // V3.5</div>
+    <div class="os-brand">PIT OS // V3.6</div>
     <div style="display:flex; gap: 10px; align-items:center;">
       <div style="font-size:10px; color:var(--term-gold);">ASCENT: <span id="hud-ascent" style="font-weight:bold;">ROOKIE</span></div>
       <button class="action-btn red-btn" style="padding:4px 8px; font-size:9px;" onclick="godMode()">GOD MODE</button>
@@ -153,7 +161,7 @@
             <button class="action-btn" style="padding:4px 8px; font-size:9px;" onclick="sortHangar('rarity')">Sort: RARITY</button>
           </div>
         </div>
-        <button class="action-btn gold-btn" style="font-size:10px; width:100%; margin-bottom:6px;" onclick="fillAuctions()">Fill Auction Board (Empty Slots)</button>
+        <button class="action-btn gold-btn" style="font-size:10px; width:100%; margin-bottom:6px; padding:10px;" onclick="fillAuctions()">Fill Auction Board (Max 5 Slots)</button>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
           <button class="action-btn red-btn" style="font-size:10px;" onclick="quickSell(0)">Sell All Common (80%)</button>
           <button class="action-btn red-btn" style="font-size:10px;" onclick="quickSell(1)">Sell Uncommon &lt; (80%)</button>
@@ -173,9 +181,9 @@
     <div class="panel">
       <div class="panel-header">Anaheim Orbital Production Foundry</div>
       <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 20px;">
-        <button class="action-btn gold-btn" style="padding:12px;" onclick="fabricate(1)">Construct Suit (₢2,500)</button>
-        <button class="action-btn gold-btn" style="padding:12px;" onclick="fabricate(10)">Assemble Strike Wing x10 (₢22,500)</button>
-        <button class="action-btn purple-btn" style="padding:12px; border:1px solid var(--term-purple);" onclick="fabricateElite()">Assemble Rare Strike Team x10 (₢65,000)</button>
+        <button class="action-btn gold-btn" style="padding:14px;" onclick="fabricate(1)">Construct Suit (₢2,500)</button>
+        <button class="action-btn gold-btn" style="padding:14px;" onclick="fabricate(10)">Assemble Strike Wing x10 (₢22,500)</button>
+        <button class="action-btn purple-btn" style="padding:14px; border:1px solid var(--term-purple);" onclick="fabricateElite()">Assemble Rare Strike Team x10 (₢65,000)</button>
       </div>
       <div class="panel-header">Rarity Specifications</div>
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; text-align:center; font-size:10px;">
@@ -198,6 +206,7 @@
       <div class="vs-screen">
         <div class="fighter-box">
           <div id="p-name" style="font-weight:bold; font-size:13px; color:var(--term-cyan);">NO DEPLOYED UNIT</div>
+          <div style="color:var(--term-purple); font-size:10px; font-weight:bold;" id="p-asc-label"></div>
           <div class="hp-bar-bg"><div id="p-hp" class="hp-bar-fill"></div></div>
           <div id="p-stats" style="font-size:10px; color:var(--text-dim);">PWR: 0 | HP: 0/0</div>
         </div>
@@ -209,8 +218,8 @@
         </div>
       </div>
       <div style="display:flex; flex-direction:column; gap:6px;">
-        <button id="btn-battle" class="action-btn red-btn" style="padding:12px;" onclick="startBattle()">Sortie: 1v1 Battle (Fee: ₢1,000)</button>
-        <button id="btn-retreat" class="action-btn" style="padding:8px;" disabled onclick="retreatBattle()">Emergency Eject</button>
+        <button id="btn-battle" class="action-btn red-btn" style="padding:14px;" onclick="startBattle()">Sortie: 1v1 Battle (Fee: ₢1,000)</button>
+        <button id="btn-retreat" class="action-btn" style="padding:10px;" disabled onclick="retreatBattle()">Emergency Eject</button>
       </div>
       <div id="combat-log" class="combat-log"><div style="color:var(--text-dim);">[SYSTEM] The Iron Arena is online. Deploy a unit from your Hangar and initiate combat.</div></div>
     </div>
@@ -222,7 +231,8 @@
       <div class="panel-header">
         <div class="panel-header-row"><span>Colony Black Market Floor</span><span style="font-size:10px; color:var(--term-cyan);"><span id="auction-count">0</span>/5 SLOTS</span></div>
       </div>
-      <div id="auction-idle" style="text-align:center; padding: 20px 10px; color:var(--text-dim); font-size:12px;">All auction blocks are empty. Select mechs from the Hangar to begin.</div>
+      <button class="action-btn gold-btn" style="margin-bottom:12px; padding:10px;" onclick="fillAuctions()">Push All Available To Empty Slots</button>
+      <div id="auction-idle" style="text-align:center; padding: 20px 10px; color:var(--text-dim); font-size:12px;">All auction blocks are currently empty.</div>
       <div id="auction-board" class="auction-grid"></div>
     </div>
   </div>
@@ -240,8 +250,8 @@
     <div class="panel">
       <div class="panel-header">Unknown Sector Expeditions</div>
       <p style="font-size:11px; color:var(--text-dim); margin-bottom:14px;">Dispatch recon fleets to deep space. Returns yield random quantities (50-1000) of a market resource and a salvaged Mobile Suit with pre-applied Mk. stat boosts (33% - 333%).</p>
-      <button class="action-btn purple-btn" style="padding:14px; margin-bottom:10px;" onclick="sendExpedition()">Send Deep Space Fleet (₢10,000)</button>
-      <div id="expedition-log" style="background:#000; border:1px solid var(--panel-border); padding:10px; height:200px; overflow-y:auto; font-size:11px;"></div>
+      <button class="action-btn purple-btn" style="padding:14px; margin-bottom:12px;" onclick="sendExpedition()">Send Deep Space Fleet (₢10,000)</button>
+      <div id="expedition-log" style="background:#000; border:1px solid var(--panel-border); padding:10px; height:240px; overflow-y:auto; font-size:11px;"></div>
     </div>
   </div>
 </main>
@@ -320,7 +330,7 @@
     const el = document.createElement('div'); el.className = 'toast'; el.innerHTML = msg;
     rack.appendChild(el); setTimeout(() => el.remove(), 3500);
   }
-  function godMode() { State.credits+=100000000; State.glory+=10000; toast("GOD MODE: +100M Credits"); updateHUD(); }
+  function godMode() { State.credits+=100000000; State.glory+=10000; toast("GOD MODE: +100M Credits"); updateHUD(); renderHangar(); }
   
   function getAscentRank() {
     let w = State.arenaWins; if(w < 10) return "ROOKIE"; if(w < 25) return "VETERAN"; if(w < 50) return "ACE PILOT"; if(w < 100) return "NEWTYPE"; return "INNOVATOR";
@@ -329,25 +339,21 @@
     let w = State.arenaWins; if(w < 10) return 0; if(w < 25) return 0.15; if(w < 50) return 0.35; if(w < 100) return 0.75; return 1.50;
   }
 
-  // Returns the suit with Ascent stats applied
   function getEffSuit(suit) {
     if(!suit) return null;
     let b = getAscentBonus();
-    return {
-      ...suit,
-      hp: Math.floor(suit.hp * (1+b)), currentHp: suit.currentHp,
-      atk: Math.floor(suit.atk * (1+b)), def: Math.floor(suit.def * (1+b)), spd: Math.floor(suit.spd * (1+b)),
-      power: Math.floor(suit.power * (1+b))
-    };
+    let s = JSON.parse(JSON.stringify(suit));
+    s.hp = Math.floor(s.hp * (1+b)); s.currentHp = s.hp;
+    s.atk = Math.floor(s.atk * (1+b)); s.def = Math.floor(s.def * (1+b)); s.spd = Math.floor(s.spd * (1+b));
+    s.power = Math.floor(s.power * (1+b));
+    return s;
   }
 
   function setTab(tabName) {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
-    const matchedBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.getAttribute('onclick').includes(tabName));
-    if(matchedBtn) { matchedBtn.classList.add('active'); matchedBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }); }
+    document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); if(b.getAttribute('onclick').includes(tabName)) b.classList.add('active'); });
+    document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
     const targetTab = document.getElementById(`tab-${tabName}`); if(targetTab) targetTab.classList.add('active');
     if(tabName === 'hangar') renderHangar(); if(tabName === 'exchange') renderMarket();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function updateHUD() {
@@ -403,12 +409,12 @@
         <div class="suit-meta"><span>${s.code}</span><span style="color:${r.color}; font-weight:bold;">${r.name}</span></div>
         <div class="suit-name" style="color:${r.color};">${s.name}${mkLabel}</div>
         <div class="suit-stats"><span>PWR: ${fmt(s.power)}</span><span>HP: ${fmt(s.hp)}</span><span>ATK: ${fmt(s.atk)}</span><span>DEF: ${fmt(s.def)}</span></div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
           <span style="font-size:11px; color:var(--term-gold); font-weight:bold;">₢${fmt(s.value)}</span>
           <div style="display:flex; gap:4px;">
-            ${!isEq ? `<button class="action-btn" style="padding:4px 8px; font-size:9px;" onclick="equipSuit('${s.uid}')">Deploy</button>` : ''}
-            ${!isEq ? `<button class="action-btn gold-btn" style="padding:4px 8px; font-size:9px;" onclick="initAuction('${s.uid}')">Auction</button>` : ''}
-            <button class="action-btn red-btn" style="padding:4px 8px; font-size:9px;" onclick="sellSuit('${s.uid}')">Sell (80%)</button>
+            ${!isEq ? `<button class="action-btn" style="padding:6px; font-size:9px;" onclick="equipSuit('${s.uid}')">Deploy</button>` : ''}
+            ${!isEq ? `<button class="action-btn gold-btn" style="padding:6px; font-size:9px;" onclick="initAuction('${s.uid}')">Auction</button>` : ''}
+            <button class="action-btn red-btn" style="padding:6px; font-size:9px;" onclick="sellSuit('${s.uid}')">Sell</button>
           </div>
         </div>
       `;
@@ -434,24 +440,23 @@
   }
 
   function applyFashion(uid) {
-    if(State.credits < 5000) { toast("₢5,000 required for Cosmetic Paint."); return; }
+    if(State.credits < 5000) { toast("₢5,000 required for Paint."); return; }
     let s = State.hangar.find(x => x.uid === uid); if(!s) return;
     State.credits -= 5000; s.fashionMods += 1;
     s.hp = Math.floor(s.hp * 1.08); s.atk = Math.floor(s.atk * 1.08); s.def = Math.floor(s.def * 1.08); s.spd = Math.floor(s.spd * 1.08);
     s.power = s.hp + s.atk + s.def + s.spd; s.value = Math.floor(s.value * 1.15);
-    toast(`Cyan/Gray Splinter Camo Applied. Power +8%!`); updateHUD(); renderHangar();
+    toast(`Cyan/Gray Splinter Camo Applied. Base Power +8%!`); updateHUD(); renderHangar();
   }
 
   function upgradeMech(frac) {
     let eq = State.hangar.find(s => s.uid === State.equippedId); if(!eq) return;
     let cost = 5000; let maxAfford = Math.floor(State.credits / cost); let toBuy = 0;
     if(frac === '1') toBuy = 1; else if(frac === '1/2') toBuy = Math.max(1, Math.floor(maxAfford / 2)); else if(frac === 'max') toBuy = maxAfford;
-    if(toBuy === 0 || State.credits < cost) { toast("Insufficient Credits for Mk. Upgrade."); return; }
+    if(toBuy === 0 || State.credits < cost) { toast("Insufficient Credits."); return; }
 
     State.credits -= toBuy * cost;
     eq.mk = (eq.mk || 0) + toBuy;
 
-    // Endless upgrades: 33% to 333% of base stats added randomly per level
     for(let i=0; i<toBuy; i++) {
         let mult = 0.33 + (Math.random() * 3.0);
         let target = Math.floor(Math.random() * 5); 
@@ -471,32 +476,31 @@
     let baseEq = State.hangar.find(s => s.uid === State.equippedId);
     if(!baseEq) { p.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-dim); font-size:12px;">No Mobile Suit deployed.</div>`; return; }
     
-    let eq = getEffSuit(baseEq); // Apply Ascension Boosts visually
+    let eq = getEffSuit(baseEq); 
     let r = RARITIES[eq.rarity];
     let mkLabel = eq.mk > 0 ? ` Mk. ${romanize(eq.mk)}` : "";
     let ascBonus = getAscentBonus();
-    let ascLabel = ascBonus > 0 ? `<div style="color:var(--term-purple); font-size:10px; font-weight:bold; margin-bottom:4px;">[+${ascBonus*100}% ASCENSION BOOST ACTIVE]</div>` : '';
+    let ascLabel = ascBonus > 0 ? `<div style="color:var(--term-purple); font-size:11px; font-weight:bold; margin-bottom:8px;">[+${ascBonus*100}% ASCENSION BOOST APPLIED]</div>` : '';
 
     p.innerHTML = `
       <div style="border-left: 3px solid ${r.color}; padding-left: 8px; margin-bottom:8px;">
         <div style="font-size:9px; color:${r.color}; text-transform:uppercase;">${r.name} FRAME [PWR: ${fmt(eq.power)}]</div>
-        <div style="font-size:14px; font-weight:bold; color:#fff;">${eq.name}${mkLabel} ${eq.fashionMods > 0 ? `<span style="color:var(--term-cyan); font-size:10px;">[+${eq.fashionMods} Paint]</span>` : ''}</div>
-        <div style="font-size:10px; color:var(--text-dim);">${eq.code}</div>
+        <div style="font-size:15px; font-weight:bold; color:#fff; line-height:1.2;">${eq.name}${mkLabel} <br>${eq.fashionMods > 0 ? `<span style="color:var(--term-cyan); font-size:11px;">[+${eq.fashionMods} Paint]</span>` : ''}</div>
       </div>
       ${ascLabel}
-      <div style="background:#000; padding:10px; border:1px solid var(--panel-border); font-size:11px; display:flex; flex-direction:column; gap:6px; margin-bottom:10px;">
+      <div style="background:#000; padding:10px; border:1px solid var(--panel-border); font-size:11px; display:flex; flex-direction:column; gap:6px; margin-bottom:12px;">
         <div style="display:flex; justify-content:space-between;"><span>ARMOR:</span><span style="color:var(--term-green); font-weight:bold;">${fmt(eq.hp)}</span></div>
         <div style="display:flex; justify-content:space-between;"><span>BEAM ATK:</span><span style="color:var(--term-red); font-weight:bold;">${fmt(eq.atk)}</span></div>
         <div style="display:flex; justify-content:space-between;"><span>SHIELD DEF:</span><span style="color:var(--term-cyan); font-weight:bold;">${fmt(eq.def)}</span></div>
         <div style="display:flex; justify-content:space-between;"><span>THRUST SPD:</span><span style="color:var(--term-gold); font-weight:bold;">${fmt(eq.spd)}</span></div>
       </div>
-      <div style="font-size:10px; color:var(--term-cyan); margin-bottom:4px;">Endless Mk. Upgrades (₢5,000 / each)</div>
-      <div class="fraction-row" style="margin-bottom:8px;">
+      <div style="font-size:10px; color:var(--term-cyan); margin-bottom:6px;">Endless Mk. Upgrades (₢5,000 / each)</div>
+      <div class="fraction-row" style="margin-bottom:10px;">
         <button class="action-btn" onclick="upgradeMech('1')">Buy 1</button>
         <button class="action-btn" onclick="upgradeMech('1/2')">Buy 1/2</button>
         <button class="action-btn" onclick="upgradeMech('max')">Buy MAX</button>
       </div>
-      <button class="action-btn purple-btn" style="width:100%; padding:10px; font-size:10px;" onclick="applyFashion('${eq.uid}')">Apply Cyan/Gray Splinter Paint (₢5,000) -> +8% Base Stats</button>
+      <button class="action-btn purple-btn" style="width:100%; padding:12px; font-size:10px;" onclick="applyFashion('${eq.uid}')">Apply Splinter Paint (₢5,000) -> +8% Base Stats</button>
     `;
   }
 
@@ -506,18 +510,17 @@
     if(State.credits < 1000) { toast("₢1,000 fee required."); return; } if(State.inBattle) return;
     State.credits -= 1000; updateHUD();
 
-    let player = getEffSuit(basePlayer); // Apply ascension buffs
+    let player = getEffSuit(basePlayer); 
 
     let isBoss = ((State.arenaWins + 1) % 5 === 0);
     let rivalPool = MASTER_CODEX.filter(s => Math.abs(s.rarity - (isBoss ? Math.min(5, player.rarity+1) : player.rarity)) <= 1);
     let rivalTemplate = rivalPool[Math.floor(Math.random() * rivalPool.length)];
     State.enemySuit = JSON.parse(JSON.stringify(rivalTemplate));
     
-    // Scale enemy to player's power level roughly to keep it competitive against Mk upgrades
     let eScale = Math.max(1.0, player.power / (State.enemySuit.power || 1));
     if(isBoss) eScale *= 1.5;
 
-    State.enemySuit.hp = Math.floor(State.enemySuit.hp * eScale);
+    State.enemySuit.hp = Math.floor(State.enemySuit.hp * eScale); State.enemySuit.currentHp = State.enemySuit.hp;
     State.enemySuit.atk = Math.floor(State.enemySuit.atk * eScale);
     State.enemySuit.def = Math.floor(State.enemySuit.def * eScale);
     State.enemySuit.spd = Math.floor(State.enemySuit.spd * eScale);
@@ -525,12 +528,10 @@
 
     if(isBoss) State.enemySuit.name = "BOSS: " + State.enemySuit.name;
 
-    // We store the combat references back in State so the interval can read them
     State.combatPlayer = player;
-    State.combatPlayer.currentHp = player.hp; 
-    State.enemySuit.currentHp = State.enemySuit.hp;
 
     document.getElementById('p-name').innerText = player.name + (player.mk>0?` Mk. ${romanize(player.mk)}`:'');
+    document.getElementById('p-asc-label').innerText = getAscentBonus() > 0 ? `[+${getAscentBonus()*100}% ASCENSION]` : '';
     document.getElementById('p-stats').innerText = `PWR: ${fmt(player.power)} | HP: ${fmt(player.hp)}`;
     document.getElementById('e-name').innerText = State.enemySuit.name;
     document.getElementById('e-name').style.color = isBoss ? "var(--term-boss)" : "var(--term-red)";
@@ -586,7 +587,6 @@
     if(State.auctions.length >= 5) { toast("Auction board is full (5/5)."); return; }
     let sIdx = State.hangar.findIndex(s => s.uid === uid); if(sIdx === -1) return;
     let suit = State.hangar[sIdx];
-    if(State.equippedId === uid) State.equippedId = null;
     State.hangar.splice(sIdx, 1);
     State.auctions.push({ suit: suit, timer: 150, currentBid: Math.floor(suit.value * 0.33), log: [] });
     updateHUD(); renderHangar(); setTab('auction'); startAuctionLoop(); renderAuctions();
@@ -622,14 +622,13 @@
       let a = State.auctions[i];
       a.timer--;
       
-      // Random bid logic
       if(Math.random() < 0.10) {
         let faction = FACTIONS[Math.floor(Math.random() * FACTIONS.length)]; let mult = 1.05 + (Math.random() * 0.25);
         if(Math.random() < 0.03) { mult = 2.0 + (Math.random() * 8.0); a.log.push(`<span style="color:var(--term-red)">[FLASH] ${faction} enters frenzy!</span>`); }
         if(a.suit.rarity >= 4 && Math.random() < 0.01) { mult = 10.0 + (Math.random() * 33.0); a.log.push(`<span style="color:var(--term-gold)">[WAR] ${faction} bids out the room!</span>`); }
         a.currentBid = Math.floor(a.currentBid * mult);
         a.log.push(`<span style="color:var(--term-cyan)">[${faction}] bids ₢${fmt(a.currentBid)}</span>`);
-        if(a.log.length > 3) a.log.shift(); // Keep log small per slot
+        if(a.log.length > 3) a.log.shift(); 
         needsRender = true;
       }
 
@@ -656,4 +655,68 @@
               <div><div style="font-size:9px; color:var(--text-dim); text-transform:uppercase;">Listing Lot:</div><div style="font-size:12px; font-weight:bold; color:var(--term-gold);">${a.suit.name}</div></div>
               <div style="text-align:right;"><div style="font-size:9px; color:var(--text-dim); text-transform:uppercase;">Highest Bid:</div><div style="font-size:14px; font-weight:bold; color:var(--term-cyan);">₢${fmt(a.currentBid)}</div></div>
             </div>
-            <div class="au
+            <div class="auction-timer-bg"><div class="auction-timer-bar" style="width:${pct}%"></div></div>
+            <div style="background:#000; padding:6px; font-size:10px; height:50px; overflow:hidden;">${htmlLog}</div>
+          </div>
+        `;
+    });
+  }
+
+  /* ================= EXCHANGE ================= */
+  function renderMarket() {
+    const box = document.getElementById('market-rows'); box.innerHTML = '';
+    State.market.forEach((m, idx) => {
+      let div = document.createElement('div'); div.className = 'market-card';
+      div.innerHTML = `<div style="display:flex; justify-content:space-between;"><strong>${m.name}</strong><span style="color:var(--term-gold);">₢${fmt(m.price)}</span></div>
+        <div style="font-size:10px; color:var(--text-dim);">Stock: ${fmt(m.owned)}</div>
+        <div class="fraction-row" style="margin-top:6px;"><button class="action-btn" onclick="tradeResource(${idx}, 'buy', 0.5)">BUY 1/2</button><button class="action-btn" onclick="tradeResource(${idx}, 'buy', 1)">BUY ALL</button><button class="action-btn gold-btn" onclick="tradeResource(${idx}, 'sell', 0.5)">SELL 1/2</button><button class="action-btn gold-btn" onclick="tradeResource(${idx}, 'sell', 1)">SELL ALL</button></div>`;
+      box.appendChild(div);
+    });
+  }
+  function tradeResource(idx, type, frac) {
+    let item = State.market[idx];
+    if(type === 'buy') { let toBuy = Math.floor(Math.floor(State.credits / item.price) * frac); if(toBuy > 0) { State.credits -= toBuy * item.price; item.owned += toBuy; toast(`Acquired ${toBuy}x ${item.name}`); } } 
+    else { let toSell = Math.floor(item.owned * frac); if(toSell > 0) { State.credits += toSell * item.price; item.owned -= toSell; toast(`Sold ${toSell}x ${item.name}`); } }
+    updateHUD(); renderMarket();
+  }
+  setInterval(() => { State.market.forEach(m => { m.price = Math.max(10, Math.floor(m.base * (0.33 + Math.random() * 3.0))); }); if(document.getElementById('tab-exchange').classList.contains('active')) renderMarket(); }, 30000);
+
+  /* ================= EXPEDITIONS ================= */
+  function sendExpedition() {
+    if(State.credits < 10000) { toast("₢10,000 required for Expedition."); return; }
+    State.credits -= 10000;
+    
+    let resIndex = Math.floor(Math.random() * State.market.length);
+    let resAmt = Math.floor(50 + Math.random() * 950);
+    State.market[resIndex].owned += resAmt;
+
+    let eMech = rollRandomSuit(false, true);
+    let rUpgrades = Math.floor(1 + Math.random() * 3); 
+    eMech.mk = rUpgrades;
+    for(let i=0; i<rUpgrades; i++) {
+        let mult = 0.33 + (Math.random() * 3.0);
+        let target = Math.floor(Math.random() * 5); 
+        if(target === 0 || target === 4) eMech.hp += Math.floor(eMech.baseHp * mult);
+        if(target === 1 || target === 4) eMech.atk += Math.floor(eMech.baseAtk * mult);
+        if(target === 2 || target === 4) eMech.def += Math.floor(eMech.baseDef * mult);
+        if(target === 3 || target === 4) eMech.spd += Math.floor(eMech.baseSpd * mult);
+    }
+    eMech.power = eMech.hp + eMech.atk + eMech.def + eMech.spd;
+    eMech.value = Math.floor(eMech.value * Math.pow(1.1, rUpgrades));
+    State.hangar.push(eMech);
+
+    const log = document.getElementById('expedition-log');
+    log.innerHTML = `<div style="margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:8px;">
+      <span style="color:var(--term-cyan); font-weight:bold;">[FLEET RETURNED]</span><br>
+      <span style="color:var(--term-gold)">+${resAmt}x ${State.market[resIndex].name}</span><br>
+      Recovered modified unit: <span style="color:${RARITIES[eMech.rarity].color}; font-weight:bold;">${eMech.name} Mk. ${romanize(eMech.mk)}</span>.
+    </div>` + log.innerHTML;
+    
+    toast("Expedition Fleet Returned.");
+    updateHUD(); renderHangar();
+  }
+
+  /* INIT */ rollRandomSuit(false); updateHUD();
+</script>
+</body>
+</html>
