@@ -3,123 +3,122 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Mobile Suit Clash: The Pit OS V3.6</title>
+<title>Mobile Suit Clash: The Pit OS V4.5</title>
 <style>
   :root {
-    --bg-base: #06080d;
-    --panel-bg: #0d111a;
-    --panel-border: #1a2233;
+    --bg-base: #04060a;
+    --panel-bg: #090e17;
+    --panel-border: #142033;
     --term-cyan: #00f0ff;
     --term-gold: #ffb700;
     --term-red: #ff3366;
     --term-green: #00ff66;
     --term-purple: #bd00ff;
     --term-boss: #ff003c;
-    --text-dim: #70829b;
+    --text-dim: #6c7f99;
     --text-bright: #e3edf7;
-    
-    --r0-color: #8c9ba5;
-    --r1-color: #00e676;
-    --r2-color: #00b0ff;
-    --r3-color: #d500f9;
-    --r4-color: #ff9100;
-    --r5-color: #ff1744;
+
+    --t0-col: #8c9ba5;
+    --t1-col: #00e676;
+    --t2-col: #00b0ff;
+    --t3-col: #2979ff;
+    --t4-col: #d500f9;
+    --t5-col: #bd00ff;
+    --t6-col: #ff9100;
+    --t7-col: #ff3d00;
+    --t8-col: #ff1744;
+    --t9-col: #ffd700;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, 'Consolas', 'Courier New', monospace; -webkit-tap-highlight-color: transparent; }
-  
-  /* Mobile-first Flexbox Layout (Fixes iOS sticky overlap bugs) */
-  html, body { 
-    height: 100%; width: 100%; 
-    background: var(--bg-base); color: var(--text-bright); 
-    overflow: hidden; display: flex; flex-direction: column; 
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg-base); color: var(--text-bright);
+    display: flex; flex-direction: column; overflow: hidden;
   }
 
   body::before {
     content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
     z-index: 999; background-size: 100% 3px; pointer-events: none;
   }
 
   header {
-    flex-shrink: 0; background: #090d14; border-bottom: 2px solid var(--term-cyan); padding: 10px 12px; 
-    display: flex; flex-direction: column; gap: 8px; box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); z-index: 100;
+    flex-shrink: 0; background: #070b12; border-bottom: 2px solid var(--term-cyan);
+    padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; z-index: 100;
   }
   .header-top { display: flex; justify-content: space-between; align-items: center; }
-  .os-brand { font-size: 13px; font-weight: bold; color: var(--term-cyan); text-shadow: 0 0 8px var(--term-cyan); letter-spacing: 1px; }
+  .os-brand { font-size: 12px; font-weight: bold; color: var(--term-cyan); text-shadow: 0 0 8px var(--term-cyan); letter-spacing: 1px; }
 
-  .hud-stats { display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+  .hud-stats { display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
   .hud-stats::-webkit-scrollbar { display: none; }
-  .hud-tag { background: rgba(0,0,0,0.6); border: 1px solid var(--panel-border); padding: 4px 8px; border-radius: 2px; font-size: 11px; flex-shrink: 0; }
+  .hud-tag { background: rgba(0,0,0,0.7); border: 1px solid var(--panel-border); padding: 3px 7px; border-radius: 2px; font-size: 10px; flex-shrink: 0; }
   .hud-tag span { font-weight: bold; }
-  .hud-credits { color: var(--term-gold); }
-  .hud-glory { color: var(--term-purple); }
 
-  nav { 
-    flex-shrink: 0; display: flex; background: var(--panel-bg); border-bottom: 1px solid var(--panel-border); 
+  nav {
+    flex-shrink: 0; display: flex; background: var(--panel-bg); border-bottom: 1px solid var(--panel-border);
     overflow-x: auto; white-space: nowrap; z-index: 99; -webkit-overflow-scrolling: touch;
   }
   nav::-webkit-scrollbar { display: none; }
   .nav-btn {
-    flex: 0 0 auto; padding: 12px 14px; background: transparent; border: none; border-right: 1px solid var(--panel-border);
-    color: var(--text-dim); font-size: 11px; text-transform: uppercase; cursor: pointer; transition: 0.15s; letter-spacing: 1px;
+    flex: 0 0 auto; padding: 10px 14px; background: transparent; border: none; border-right: 1px solid var(--panel-border);
+    color: var(--text-dim); font-size: 11px; text-transform: uppercase; cursor: pointer; letter-spacing: 1px;
   }
-  .nav-btn:active, .nav-btn.active { background: rgba(0, 240, 255, 0.15); color: var(--term-cyan); border-bottom: 2px solid var(--term-cyan); }
+  .nav-btn.active { background: rgba(0, 240, 255, 0.15); color: var(--term-cyan); border-bottom: 2px solid var(--term-cyan); }
 
-  main { 
-    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px; 
-    padding-bottom: 60px; /* Safe area for bottom swipe bar */
-  }
-  .view-tab { display: none; width: 100%; flex-direction: column; gap: 12px; }
+  main { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 10px; padding-bottom: 70px; }
+  .view-tab { display: none; width: 100%; flex-direction: column; gap: 10px; }
   .view-tab.active { display: flex; }
 
-  .panel { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 3px; padding: 12px; display: flex; flex-direction: column; width: 100%; }
+  .panel { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 3px; padding: 10px; display: flex; flex-direction: column; }
   .panel-header {
-    font-size: 12px; font-weight: bold; color: var(--term-gold); text-transform: uppercase; letter-spacing: 1px; 
-    padding-bottom: 8px; margin-bottom: 10px; border-bottom: 1px dashed var(--panel-border); display: flex; flex-direction: column; gap: 8px;
+    font-size: 11px; font-weight: bold; color: var(--term-gold); text-transform: uppercase; letter-spacing: 1px;
+    padding-bottom: 6px; margin-bottom: 8px; border-bottom: 1px dashed var(--panel-border); display: flex; flex-direction: column; gap: 6px;
   }
   .panel-header-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
 
   button.action-btn {
     background: rgba(0, 240, 255, 0.05); border: 1px solid var(--term-cyan); color: var(--term-cyan);
-    padding: 8px 12px; cursor: pointer; text-transform: uppercase; font-size: 11px; font-weight: bold; border-radius: 2px;
+    padding: 7px 10px; cursor: pointer; text-transform: uppercase; font-size: 10px; font-weight: bold; border-radius: 2px;
   }
-  button.action-btn:active:not(:disabled) { background: var(--term-cyan); color: #000; }
-  button.action-btn:disabled { border-color: #333; color: #555; }
+  button.action-btn:active { background: var(--term-cyan); color: #000; }
+  button.action-btn:disabled { border-color: #2b3340; color: #495566; }
   button.gold-btn { border-color: var(--term-gold); color: var(--term-gold); background: rgba(255, 183, 0, 0.05); }
-  button.gold-btn:active:not(:disabled) { background: var(--term-gold); color: #000; }
+  button.gold-btn:active { background: var(--term-gold); color: #000; }
   button.red-btn { border-color: var(--term-red); color: var(--term-red); background: rgba(255, 51, 102, 0.05); }
-  button.red-btn:active:not(:disabled) { background: var(--term-red); color: #000; }
+  button.red-btn:active { background: var(--term-red); color: #000; }
   button.purple-btn { border-color: var(--term-purple); color: var(--term-purple); background: rgba(189, 0, 255, 0.05); }
-  button.purple-btn:active:not(:disabled) { background: var(--term-purple); color: #000; }
+  button.purple-btn:active { background: var(--term-purple); color: #000; }
 
-  .hangar-grid { display: grid; grid-template-columns: 1fr; gap: 10px; width: 100%; }
-  @media(min-width: 600px) { .hangar-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); } }
-  .suit-card { background: #090d14; border: 1px solid #1c2638; border-radius: 3px; padding: 12px; display: flex; flex-direction: column; gap: 8px; position:relative; }
-  .suit-card.equipped { border-color: var(--term-green) !important; box-shadow: 0 0 8px rgba(0, 255, 102, 0.4); }
-  .suit-name { font-size: 13px; font-weight: bold; }
-  .suit-meta { font-size: 11px; display: flex; justify-content: space-between; color: var(--text-dim); }
-  .suit-stats { font-size: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: rgba(0,0,0,0.4); padding: 8px; border-radius: 2px; }
+  .hangar-grid { display: grid; grid-template-columns: 1fr; gap: 8px; width: 100%; }
+  @media(min-width: 600px) { .hangar-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); } }
+  .suit-card { background: #060910; border: 1px solid #142033; border-radius: 3px; padding: 10px; display: flex; flex-direction: column; gap: 6px; position: relative; }
+  .suit-card.alpha-tagged { border-color: var(--term-purple) !important; box-shadow: 0 0 8px rgba(189, 0, 255, 0.3); }
+  .suit-card.equipped { border-color: var(--term-green) !important; box-shadow: 0 0 8px rgba(0, 255, 102, 0.3); }
+  .suit-name { font-size: 12px; font-weight: bold; line-height: 1.3; }
+  .suit-meta { font-size: 10px; display: flex; justify-content: space-between; color: var(--text-dim); }
+  .suit-stats { font-size: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: rgba(0,0,0,0.4); padding: 6px; border-radius: 2px; }
 
-  .arena-stage { display: flex; flex-direction: column; gap: 10px; width: 100%; }
-  .vs-screen { display: flex; flex-direction: column; gap: 14px; background: #07090f; border: 1px solid var(--panel-border); padding: 14px; border-radius: 3px; }
-  .fighter-box { width: 100%; display: flex; flex-direction: column; gap: 6px; text-align: center; }
-  .hp-bar-bg { width: 100%; height: 16px; background: #1a2233; border: 1px solid #334460; border-radius: 2px; overflow: hidden; }
+  .vs-screen { display: flex; flex-direction: column; gap: 10px; background: #05080f; border: 1px solid var(--panel-border); padding: 10px; border-radius: 3px; }
+  .hp-bar-bg { width: 100%; height: 14px; background: #111a28; border: 1px solid #23334d; border-radius: 2px; overflow: hidden; }
   .hp-bar-fill { height: 100%; width: 100%; background: var(--term-green); transition: width 0.2s ease; }
-  .combat-log { height: 180px; background: #000; border: 1px solid var(--panel-border); padding: 10px; overflow-y: auto; font-size: 11px; line-height: 1.6; }
+  .combat-log { height: 180px; background: #000; border: 1px solid var(--panel-border); padding: 8px; overflow-y: auto; font-size: 10px; line-height: 1.5; }
 
-  .auction-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-  .auction-slot { background: #07090f; border: 1px solid var(--panel-border); padding: 10px; border-radius: 3px; display: flex; flex-direction: column; gap: 8px; }
+  .team-roster { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .team-member { background: #000; border: 1px solid var(--panel-border); padding: 6px; border-radius: 2px; font-size: 9px; text-align: center; }
+
+  .auction-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .auction-slot { background: #060910; border: 1px solid var(--panel-border); padding: 10px; border-radius: 3px; display: flex; flex-direction: column; gap: 6px; }
   .auction-timer-bg { width: 100%; height: 6px; background: #111824; border: 1px solid var(--term-cyan); }
   .auction-timer-bar { height: 100%; width: 100%; background: var(--term-cyan); transition: width 0.1s linear; }
 
-  .market-grid { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-  .market-card { background: #080c14; border: 1px solid var(--panel-border); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-  .fraction-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .fraction-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .fraction-row button { padding: 6px 0; font-size: 9px; }
 
-  #toast-rack { position: fixed; bottom: 20px; left: 12px; right: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 1000; pointer-events: none; }
-  .toast { background: #0d111a; border-left: 4px solid var(--term-cyan); color: var(--text-bright); padding: 12px 14px; font-size: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.8); animation: slideIn 0.2s, fadeOut 0.4s 3.6s forwards; pointer-events: auto; }
-  @keyframes slideIn { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  #toast-rack { position: fixed; bottom: 20px; left: 12px; right: 12px; display: flex; flex-direction: column; gap: 6px; z-index: 1000; pointer-events: none; }
+  .toast { background: #0a101a; border-left: 4px solid var(--term-cyan); color: var(--text-bright); padding: 10px 12px; font-size: 11px; box-shadow: 0 4px 15px rgba(0,0,0,0.9); animation: slideIn 0.2s, fadeOut 0.4s 3.2s forwards; pointer-events: auto; }
+  @keyframes slideIn { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
   @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
 </style>
 </head>
@@ -127,51 +126,53 @@
 
 <header>
   <div class="header-top">
-    <div class="os-brand">PIT OS // V3.6</div>
-    <div style="display:flex; gap: 10px; align-items:center;">
-      <div style="font-size:10px; color:var(--term-gold);">ASCENT: <span id="hud-ascent" style="font-weight:bold;">ROOKIE</span></div>
-      <button class="action-btn red-btn" style="padding:4px 8px; font-size:9px;" onclick="godMode()">GOD MODE</button>
+    <div class="os-brand">THE PIT OS // V4.5</div>
+    <div style="display:flex; gap: 6px; align-items:center;">
+      <div style="font-size:9px; color:var(--term-gold);">RANK: <span id="hud-ascent" style="font-weight:bold;">ROOKIE</span></div>
+      <button class="action-btn red-btn" style="padding:3px 6px; font-size:8px;" onclick="godMode()">GOD MODE</button>
     </div>
   </div>
   <div class="hud-stats">
-    <div class="hud-tag">CREDITS: <span id="hud-credits" class="hud-credits">₢25,000</span></div>
-    <div class="hud-tag">GLORY: <span id="hud-glory" class="hud-glory">0</span></div>
-    <div class="hud-tag">SUITS: <span id="hud-hangar-count" style="color:#fff;">0</span>/1000</div>
+    <div class="hud-tag">CREDITS: <span id="hud-credits" style="color:var(--term-gold);">₢100,000</span></div>
+    <div class="hud-tag">GLORY: <span id="hud-glory" style="color:var(--term-purple);">0</span></div>
+    <div class="hud-tag">SUITS: <span id="hud-count" style="color:#fff;">0</span>/2000</div>
+    <div class="hud-tag">ALPHA TEAM: <span id="hud-alpha-count" style="color:var(--term-cyan);">0</span>/3</div>
   </div>
 </header>
 
 <nav>
-  <button class="nav-btn active" onclick="setTab('hangar')">Hangar Bay</button>
+  <button class="nav-btn active" onclick="setTab('hangar')">Hangar</button>
   <button class="nav-btn" onclick="setTab('procure')">Fabricator</button>
-  <button class="nav-btn" onclick="setTab('arena')">Iron Arena</button>
-  <button class="nav-btn" onclick="setTab('auction')">Colony Auction</button>
+  <button class="nav-btn" onclick="setTab('arena')">1v1 Arena</button>
+  <button class="nav-btn" onclick="setTab('campaign')">Alpha 3v3</button>
+  <button class="nav-btn" onclick="setTab('auction')">Auction (5)</button>
   <button class="nav-btn" onclick="setTab('exchange')">Exchange</button>
   <button class="nav-btn" onclick="setTab('expeditions')">Expeditions</button>
 </nav>
 
 <main>
-  <!-- TAB 1: HANGAR BAY -->
+  <!-- TAB 1: HANGAR -->
   <div id="tab-hangar" class="view-tab active">
     <div class="panel">
       <div class="panel-header">
         <div class="panel-header-row">
-          <span>Active Hangar</span>
+          <span>Hangar Management</span>
           <div style="display:flex; gap:4px;">
-            <button class="action-btn" style="padding:4px 8px; font-size:9px;" onclick="sortHangar('power')">Sort: PWR</button>
-            <button class="action-btn" style="padding:4px 8px; font-size:9px;" onclick="sortHangar('rarity')">Sort: RARITY</button>
+            <button class="action-btn" style="padding:4px 6px; font-size:8px;" onclick="sortHangar('power')">Sort: PWR</button>
+            <button class="action-btn" style="padding:4px 6px; font-size:8px;" onclick="sortHangar('tier')">Sort: TIER</button>
           </div>
         </div>
-        <button class="action-btn gold-btn" style="font-size:10px; width:100%; margin-bottom:6px; padding:10px;" onclick="fillAuctions()">Fill Auction Board (Max 5 Slots)</button>
+        <button class="action-btn gold-btn" style="font-size:9px; width:100%; padding:8px;" onclick="fillAuctions()">Fill Auction Board (Up to 5 Slots)</button>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
-          <button class="action-btn red-btn" style="font-size:10px;" onclick="quickSell(0)">Sell All Common (80%)</button>
-          <button class="action-btn red-btn" style="font-size:10px;" onclick="quickSell(1)">Sell Uncommon &lt; (80%)</button>
+          <button class="action-btn red-btn" style="font-size:9px;" onclick="quickSell(0)">Sell All Tier I (80%)</button>
+          <button class="action-btn red-btn" style="font-size:9px;" onclick="quickSell(1)">Sell Tier II &lt; (80%)</button>
         </div>
       </div>
       <div id="hangar-grid" class="hangar-grid"></div>
     </div>
     
     <div class="panel">
-      <div class="panel-header">Deployed Unit Telemetry</div>
+      <div class="panel-header">Deployed Solo Unit Telemetry</div>
       <div id="equipped-panel"></div>
     </div>
   </div>
@@ -179,79 +180,101 @@
   <!-- TAB 2: FABRICATOR -->
   <div id="tab-procure" class="view-tab">
     <div class="panel">
-      <div class="panel-header">Anaheim Orbital Production Foundry</div>
-      <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 20px;">
-        <button class="action-btn gold-btn" style="padding:14px;" onclick="fabricate(1)">Construct Suit (₢2,500)</button>
-        <button class="action-btn gold-btn" style="padding:14px;" onclick="fabricate(10)">Assemble Strike Wing x10 (₢22,500)</button>
-        <button class="action-btn purple-btn" style="padding:14px; border:1px solid var(--term-purple);" onclick="fabricateElite()">Assemble Rare Strike Team x10 (₢65,000)</button>
+      <div class="panel-header">Heavy Foundry Fabrication</div>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 16px;">
+        <button class="action-btn gold-btn" style="padding:12px;" onclick="fabricate(1)">Construct Mobile Suit (₢5,000)</button>
+        <button class="action-btn gold-btn" style="padding:12px;" onclick="fabricate(10)">Assemble Strike Wing x10 (₢45,000)</button>
+        <button class="action-btn purple-btn" style="padding:12px;" onclick="fabricateElite()">Assemble High-Tier Strike Team x10 (₢150,000)</button>
       </div>
-      <div class="panel-header">Rarity Specifications</div>
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; text-align:center; font-size:10px;">
-        <div style="background:#000; border:1px solid var(--r0-color); padding:8px;"><span style="color:var(--r0-color)">COMMON</span><br>Tier I</div>
-        <div style="background:#000; border:1px solid var(--r1-color); padding:8px;"><span style="color:var(--r1-color)">UNCOMMON</span><br>Tier II</div>
-        <div style="background:#000; border:1px solid var(--r2-color); padding:8px;"><span style="color:var(--r2-color)">RARE</span><br>Tier III</div>
-        <div style="background:#000; border:1px solid var(--r3-color); padding:8px;"><span style="color:var(--r3-color)">ACE SPEC</span><br>Tier IV</div>
-        <div style="background:#000; border:1px solid var(--r4-color); padding:8px;"><span style="color:var(--r4-color)">PROTOTYPE</span><br>Tier V</div>
-        <div style="background:#000; border:1px solid var(--r5-color); padding:8px;"><span style="color:var(--r5-color)">SINGULARITY</span><br>Tier VI</div>
-      </div>
+      <div class="panel-header">10 Rarity Tiers Overview (2,000 Suit Roster)</div>
+      <div id="tier-breakdown-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:4px; font-size:9px; text-align:center;"></div>
     </div>
   </div>
 
   <!-- TAB 3: 1V1 ARENA -->
   <div id="tab-arena" class="view-tab">
-    <div class="arena-stage">
-      <div style="text-align:center; font-size:11px; color:var(--term-cyan); font-weight:bold;">
-        ARENA WINS: <span id="arena-win-count">0</span> | NEXT BOSS: ROUND <span id="arena-boss-round">5</span>
+    <div class="panel">
+      <div style="text-align:center; font-size:10px; color:var(--term-cyan); font-weight:bold; margin-bottom:8px;">
+        SOLO WINS: <span id="arena-win-count">0</span> | NEXT BOSS: BATTLE <span id="arena-boss-round">5</span>
       </div>
       <div class="vs-screen">
-        <div class="fighter-box">
-          <div id="p-name" style="font-weight:bold; font-size:13px; color:var(--term-cyan);">NO DEPLOYED UNIT</div>
-          <div style="color:var(--term-purple); font-size:10px; font-weight:bold;" id="p-asc-label"></div>
-          <div class="hp-bar-bg"><div id="p-hp" class="hp-bar-fill"></div></div>
-          <div id="p-stats" style="font-size:10px; color:var(--text-dim);">PWR: 0 | HP: 0/0</div>
+        <div>
+          <div id="p-name" style="font-weight:bold; font-size:12px; color:var(--term-cyan);">NO DEPLOYED UNIT</div>
+          <div style="color:var(--term-purple); font-size:9px; font-weight:bold;" id="p-asc-label"></div>
+          <div class="hp-bar-bg" style="margin-top:4px;"><div id="p-hp" class="hp-bar-fill"></div></div>
+          <div id="p-stats" style="font-size:9px; color:var(--text-dim); margin-top:2px;">PWR: 0 | HP: 0/0</div>
         </div>
-        <div id="vs-divider" style="font-size:18px; font-weight:bold; color:var(--term-red); text-align:center;">— VERSUS —</div>
-        <div class="fighter-box">
-          <div id="e-name" style="font-weight:bold; font-size:13px; color:var(--term-red);">RIVAL SUIT</div>
-          <div class="hp-bar-bg"><div id="e-hp" class="hp-bar-fill" style="background:var(--term-red);"></div></div>
-          <div id="e-stats" style="font-size:10px; color:var(--text-dim);">PWR: 0 | HP: 0/0</div>
+        <div id="vs-divider" style="font-size:14px; font-weight:bold; color:var(--term-red); text-align:center;">— VERSUS —</div>
+        <div>
+          <div id="e-name" style="font-weight:bold; font-size:12px; color:var(--term-red);">RIVAL SUIT</div>
+          <div class="hp-bar-bg" style="margin-top:4px;"><div id="e-hp" class="hp-bar-fill" style="background:var(--term-red);"></div></div>
+          <div id="e-stats" style="font-size:9px; color:var(--text-dim); margin-top:2px;">PWR: 0 | HP: 0/0</div>
         </div>
       </div>
-      <div style="display:flex; flex-direction:column; gap:6px;">
-        <button id="btn-battle" class="action-btn red-btn" style="padding:14px;" onclick="startBattle()">Sortie: 1v1 Battle (Fee: ₢1,000)</button>
-        <button id="btn-retreat" class="action-btn" style="padding:10px;" disabled onclick="retreatBattle()">Emergency Eject</button>
+      <div style="display:flex; flex-direction:column; gap:6px; margin-top:8px;">
+        <button id="btn-battle" class="action-btn red-btn" style="padding:12px;" onclick="startBattle()">Initiate 1v1 Clash (Fee: ₢2,000)</button>
+        <button id="btn-retreat" class="action-btn" style="padding:8px;" disabled onclick="retreatBattle()">Emergency Eject</button>
       </div>
-      <div id="combat-log" class="combat-log"><div style="color:var(--text-dim);">[SYSTEM] The Iron Arena is online. Deploy a unit from your Hangar and initiate combat.</div></div>
+      <div id="combat-log" class="combat-log" style="margin-top:8px;"><div style="color:var(--text-dim);">[SYSTEM] Iron Arena operational. Sortie when ready.</div></div>
     </div>
   </div>
 
-  <!-- TAB 4: AUCTION -->
+  <!-- TAB 4: ALPHA 3V3 CAMPAIGN -->
+  <div id="tab-campaign" class="view-tab">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-header-row">
+          <span>Alpha Team Roguelite Campaign</span>
+          <span style="color:var(--term-gold); font-size:10px;">LADDER: STAGE <span id="campaign-stage">1</span>/3</span>
+        </div>
+      </div>
+      <p style="font-size:10px; color:var(--text-dim); margin-bottom:8px;">Deploy 3 mechs as your Alpha Team. Clear 3 escalating 3v3 ladder battles to win up to 3 random mechs from the full 2,000 mech roster plus free Mk. levels.</p>
+      
+      <div style="margin-bottom:8px;">
+        <div style="font-size:10px; color:var(--term-cyan); margin-bottom:4px; font-weight:bold;">YOUR ALPHA TEAM (Set in Hangar):</div>
+        <div id="alpha-team-display" class="team-roster"></div>
+      </div>
+
+      <div style="margin-bottom:8px;">
+        <div style="font-size:10px; color:var(--term-red); margin-bottom:4px; font-weight:bold;">ENEMY OPPOSITION:</div>
+        <div id="enemy-team-display" class="team-roster"></div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <button id="btn-campaign" class="action-btn purple-btn" style="padding:12px;" onclick="startCampaignFight()">Sortie Alpha Team: Stage Battle (Fee: ₢10,000)</button>
+        <button class="action-btn" style="padding:8px;" onclick="resetCampaign()">Abandon / Reset Campaign</button>
+      </div>
+      <div id="campaign-log" class="combat-log" style="margin-top:8px;"><div style="color:var(--text-dim);">[CAMPAIGN] Assign 3 Alpha Team units in the Hangar to initiate the ladder.</div></div>
+    </div>
+  </div>
+
+  <!-- TAB 5: AUCTION -->
   <div id="tab-auction" class="view-tab">
     <div class="panel">
       <div class="panel-header">
-        <div class="panel-header-row"><span>Colony Black Market Floor</span><span style="font-size:10px; color:var(--term-cyan);"><span id="auction-count">0</span>/5 SLOTS</span></div>
+        <div class="panel-header-row"><span>Colony Black Market Floor</span><span style="font-size:10px; color:var(--term-cyan);"><span id="auction-count">0</span>/5 ACTIVE</span></div>
       </div>
-      <button class="action-btn gold-btn" style="margin-bottom:12px; padding:10px;" onclick="fillAuctions()">Push All Available To Empty Slots</button>
-      <div id="auction-idle" style="text-align:center; padding: 20px 10px; color:var(--text-dim); font-size:12px;">All auction blocks are currently empty.</div>
+      <button class="action-btn gold-btn" style="margin-bottom:8px; padding:8px;" onclick="fillAuctions()">Auto-Fill Board From Hangar</button>
+      <div id="auction-idle" style="text-align:center; padding: 20px; color:var(--text-dim); font-size:11px;">All 5 auction blocks are empty. Select units from Hangar to put on the block.</div>
       <div id="auction-board" class="auction-grid"></div>
     </div>
   </div>
 
-  <!-- TAB 5: EXCHANGE -->
+  <!-- TAB 6: EXCHANGE -->
   <div id="tab-exchange" class="view-tab">
     <div class="panel">
-      <div class="panel-header"><div class="panel-header-row"><span>Resource Exchange</span><span style="font-size:9px; color:var(--term-cyan);">Cycle: 30s</span></div></div>
-      <div id="market-rows" class="market-grid"></div>
+      <div class="panel-header"><div class="panel-header-row"><span>Commodities Exchange</span><span style="font-size:9px; color:var(--term-cyan);">Cycle: 30s</span></div></div>
+      <div id="market-rows" style="display:flex; flex-direction:column; gap:8px;"></div>
     </div>
   </div>
 
-  <!-- TAB 6: EXPEDITIONS -->
+  <!-- TAB 7: EXPEDITIONS -->
   <div id="tab-expeditions" class="view-tab">
     <div class="panel">
-      <div class="panel-header">Unknown Sector Expeditions</div>
-      <p style="font-size:11px; color:var(--text-dim); margin-bottom:14px;">Dispatch recon fleets to deep space. Returns yield random quantities (50-1000) of a market resource and a salvaged Mobile Suit with pre-applied Mk. stat boosts (33% - 333%).</p>
-      <button class="action-btn purple-btn" style="padding:14px; margin-bottom:12px;" onclick="sendExpedition()">Send Deep Space Fleet (₢10,000)</button>
-      <div id="expedition-log" style="background:#000; border:1px solid var(--panel-border); padding:10px; height:240px; overflow-y:auto; font-size:11px;"></div>
+      <div class="panel-header">Deep Space Salvage Recon</div>
+      <p style="font-size:10px; color:var(--text-dim); margin-bottom:10px;">Dispatch salvage task forces to derelict colony sectors. Guarantees 50-1,000 units of a commodity and a heavily pre-tuned salvaged suit with +33% to +333% baseline stat multipliers.</p>
+      <button class="action-btn purple-btn" style="padding:12px; margin-bottom:10px;" onclick="sendExpedition()">Launch Recon Fleet (₢15,000)</button>
+      <div id="expedition-log" style="background:#000; border:1px solid var(--panel-border); padding:8px; height:200px; overflow-y:auto; font-size:10px;"></div>
     </div>
   </div>
 </main>
@@ -259,19 +282,50 @@
 <div id="toast-rack"></div>
 
 <script>
-  /* ================= 1000 PROCEDURAL GUNDAM ROSTER ================= */
-  const DESIGNATIONS = ["RX-78","MS-06","MSN-04","RX-93","MSZ-006","MS-09","RGM-79","MS-14","AMX-004","OZ-13MS","XXXG-00W0","GN-001","ZGMF-X10A","ASW-G-08","GF13-017NJ","Concept-X","System-99","F91","LM314V21","GX-9900","MSN-06S","RX-0","NZ-666","FA-78","MS-07","RGM-89","RGZ-91","PMX-003","AMX-002","RX-178","GAT-X105","ZGMF-X20A","GN-0000","ASW-G-11","GNX-603T","SVMS-01","MSN-00100","RMS-099","NRX-044","ORX-005","XM-X1","XM-X2","XM-X3","RX-104FF","RX-105","AGX-04","MSN-02","YMS-15","RGM-96X","RGZ-95"];
-  const PREFIXES = ["Proto","Strike","Custom","Heavy","Full Armor","Psycho","Hi-Nu","Banshee","Perfect","Re-GZ","G-Armor","Sniper","Command","Tactical","Shadow","Ver.Ka","Dual","Blitz","Aegis","Buster","Justice","Freedom","Destiny","Providence","Exia","Dynames","Kyrios","Virtue","Barbatos","Lupus","Gusion","Flauros","Bael","Kimaris","Vidar","Tallgeese","Epyon","Deathscythe","Heavyarms","Sandrock","Shenlong","Altron","Wing Zero","Master","Shining","God","Nobel","Turn A","Turn X","Unicorn"];
-  const CORES = ["Gundam","Zaku","Sazabi","Nu","Zeta","Dom","GM","Gelgoog","Qubeley","Epyon","Freedom","Exia","Barbatos","Sinanju","Kshatriya","Banshee","Phenex","Jegan","The-O","Hyaku-Shiki","Rick Dias","Gouf","Kampfer","Zeong","Tallgeese","Turn-A","V2-Assault","F91","Crossbone","G-Self","Calibarn","Aerial","Lfrith","Darilbalde","Pharact","Schwarzette","Michaelis","Beguir-Pente","Zowort","Grimgerde","Penelope","Xi","Gerbera","Gyan","ReZEL","Jesta","Byarlant","Gabthley","Hambrabi","Baund Doc"];
-  const SUFFIXES = ["Prime","MK-II","MK-III","Custom","Origin","Kai","Titan","Dominator","Zero","Infinity","Eclipse","Recon","Assault","Vanguard","Hazard","Ghost","Specter","Apex","Omega","Final Battle"];
+  /* ================= 2,000 PROCEDURAL GUNDAM ROSTER WITH 10 TIERS ================= */
+  const DESIGNATIONS = [
+    "RX-78","MS-06","MSN-04","RX-93","MSZ-006","MS-09","RGM-79","MS-14","AMX-004","OZ-13MS",
+    "XXXG-00W0","GN-001","ZGMF-X10A","ASW-G-08","GF13-017NJ","Concept-X","System-99","F91","LM314V21","GX-9900",
+    "MSN-06S","RX-0","NZ-666","FA-78","MS-07","RGM-89","RGZ-91","PMX-003","AMX-002","RX-178",
+    "GAT-X105","ZGMF-X20A","GN-0000","ASW-G-11","GNX-603T","SVMS-01","MSN-00100","RMS-099","NRX-044","ORX-005",
+    "XM-X1","XM-X2","XM-X3","RX-104FF","RX-105","AGX-04","MSN-02","YMS-15","RGM-96X","RGZ-95"
+  ];
 
-  const RARITIES = [
-    { name: "Common", color: "var(--r0-color)", mult: 1.0 },
-    { name: "Uncommon", color: "var(--r1-color)", mult: 1.4 },
-    { name: "Rare", color: "var(--r2-color)", mult: 2.0 },
-    { name: "Ace Spec", color: "var(--r3-color)", mult: 3.2 },
-    { name: "Prototype", color: "var(--r4-color)", mult: 5.5 },
-    { name: "Singularity God", color: "var(--r5-color)", mult: 10.0 }
+  const PREFIXES = [
+    "Proto","Strike","Custom","Heavy","Full Armor","Psycho","Hi-Nu","Banshee","Perfect","Re-GZ",
+    "G-Armor","Sniper","Command","Tactical","Shadow","Ver.Ka","Dual","Blitz","Aegis","Buster",
+    "Justice","Freedom","Destiny","Providence","Exia","Dynames","Kyrios","Virtue","Barbatos","Lupus",
+    "Gusion","Flauros","Bael","Kimaris","Vidar","Tallgeese","Epyon","Deathscythe","Heavyarms","Sandrock",
+    "Shenlong","Altron","Wing Zero","Master","Shining","God","Nobel","Turn A","Turn X","Unicorn",
+    "Apocalypse","Berserk","Carnage","Dreadnought","Cataclysm","Vindicator","Hellfire","Abyssal","Nemesis","Titan",
+    "Vanguard","Annihilator","Oblivion","Ragnarok","Hyperion","Thanatos","Colossus","Zeus","Archangel","Inferno",
+    "Phantom","Ghost","Specter","Reaper","Void","Nova","Solar","Lunar","Vortex","Pulsar"
+  ];
+
+  const CORES = [
+    "Gundam","Zaku","Sazabi","Nu","Zeta","Dom","GM","Gelgoog","Qubeley","Epyon",
+    "Freedom","Exia","Barbatos","Sinanju","Kshatriya","Banshee","Phenex","Jegan","The-O","Hyaku-Shiki",
+    "Rick Dias","Gouf","Kampfer","Zeong","Tallgeese","Turn-A","V2-Assault","F91","Crossbone","G-Self",
+    "Calibarn","Aerial","Lfrith","Darilbalde","Pharact","Schwarzette","Michaelis","Beguir-Pente","Zowort","Grimgerde",
+    "Penelope","Xi","Gerbera","Gyan","ReZEL","Jesta","Byarlant","Gabthley","Hambrabi","Baund Doc"
+  ];
+
+  const SUFFIXES = [
+    "Prime","MK-II","MK-III","Custom","Origin","Kai","Titan","Dominator","Zero","Infinity",
+    "Eclipse","Recon","Assault","Vanguard","Hazard","Ghost","Specter","Apex","Omega","Final Battle"
+  ];
+
+  const TIERS = [
+    { tier: 1, name: "Tier I: Mass Production", color: "var(--t0-col)", mult: 1.0, minPower: 400 },
+    { tier: 2, name: "Tier II: High Mobility", color: "var(--t1-col)", mult: 1.8, minPower: 1200 },
+    { tier: 3, name: "Tier III: Ace Spec", color: "var(--t2-col)", mult: 3.2, minPower: 3500 },
+    { tier: 4, name: "Tier IV: Commander Frame", color: "var(--t3-col)", mult: 6.0, minPower: 9000 },
+    { tier: 5, name: "Tier V: Prototype Testbed", color: "var(--t4-col)", mult: 12.0, minPower: 22000 },
+    { tier: 6, name: "Tier VI: Forbidden Custom", color: "var(--t5-col)", mult: 25.0, minPower: 55000 },
+    { tier: 7, name: "Tier VII: Orbital Warmaster", color: "var(--t6-col)", mult: 55.0, minPower: 130000 },
+    { tier: 8, name: "Tier VIII: Colossus Engine", color: "var(--t7-col)", mult: 120.0, minPower: 300000 },
+    { tier: 9, name: "Tier IX: Calamity Singularity", color: "var(--t8-col)", mult: 260.0, minPower: 650000 },
+    { tier: 10, name: "Tier X: Apex Kirin God", color: "var(--t9-col)", mult: 520.0, minPower: 1000000 }
   ];
 
   let MASTER_CODEX = [];
@@ -280,27 +334,47 @@
     for(let d=0; d<DESIGNATIONS.length; d++){
       for(let p=0; p<PREFIXES.length; p++){
         for(let c=0; c<CORES.length; c++){
-          if(id > 1000) break;
+          if(id > 2000) break;
           let s = SUFFIXES[(d + p + c) % SUFFIXES.length];
-          let rIndex = 0;
-          if(id > 400) rIndex = 1; if(id > 700) rIndex = 2; if(id > 880) rIndex = 3; if(id > 960) rIndex = 4; if(id > 990) rIndex = 5;
+          
+          let tIdx = Math.min(9, Math.floor((id - 1) / 200));
+          let tData = TIERS[tIdx];
 
-          let rData = RARITIES[rIndex];
-          let hp = Math.floor((350 + (id * 4.2)) * rData.mult);
-          let atk = Math.floor((45 + (id * 0.95)) * rData.mult);
-          let def = Math.floor((30 + (id * 0.65)) * rData.mult);
-          let spd = Math.floor((20 + (id * 0.55)) * rData.mult);
-          let val = Math.floor((500 + (id * 45)) * rData.mult * rData.mult);
+          let baseVal = Math.floor(250 + (id * 2.5));
+          let hp = Math.floor((baseVal * 1.5) * tData.mult);
+          let atk = Math.floor((baseVal * 0.45) * tData.mult);
+          let def = Math.floor((baseVal * 0.35) * tData.mult);
+          let spd = Math.floor((baseVal * 0.25) * tData.mult);
+          let power = hp + atk + def + spd;
+
+          if(tIdx === 9 && power < 1000000) {
+            let boost = 1000000 / power;
+            hp = Math.floor(hp * boost);
+            atk = Math.floor(atk * boost);
+            def = Math.floor(def * boost);
+            spd = Math.floor(spd * boost);
+            power = hp + atk + def + spd;
+          }
+
+          let marketValue = Math.floor(power * 1.8);
 
           MASTER_CODEX.push({
-            id: id, code: `${DESIGNATIONS[d]}-${String(id).padStart(3,'0')}`, name: `${PREFIXES[p]} ${CORES[c]} ${s}`,
-            rarity: rIndex, baseHp: hp, baseAtk: atk, baseDef: def, baseSpd: spd, hp: hp, currentHp: hp, atk: atk, def: def, spd: spd, value: val, power: hp + atk + def + spd
+            id: id,
+            code: `${DESIGNATIONS[d]}-${String(id).padStart(4,'0')}`,
+            name: `${PREFIXES[p]} ${CORES[c]} ${s}`,
+            tierIndex: tIdx,
+            tierName: tData.name,
+            tierColor: tData.color,
+            baseHp: hp, baseAtk: atk, baseDef: def, baseSpd: spd,
+            hp: hp, atk: atk, def: def, spd: spd,
+            power: power,
+            value: marketValue
           });
           id++;
         }
-        if(id > 1000) break;
+        if(id > 2000) break;
       }
-      if(id > 1000) break;
+      if(id > 2000) break;
     }
   }
   buildCodex();
@@ -313,108 +387,167 @@
   }
 
   let State = {
-    credits: 25000, glory: 0, arenaWins: 0, sortMode: 'power',
-    hangar: [], equippedId: null, inBattle: false, battleInterval: null, enemySuit: null,
+    credits: 100000, glory: 0, arenaWins: 0, sortMode: 'power',
+    hangar: [], equippedId: null, alphaTeamUids: [],
+    campaignStage: 1, inCampaign: false, campaignInterval: null,
+    inBattle: false, battleInterval: null,
     market: [
-      { id: "luna", name: "Luna Titanium", price: 80, base: 80, owned: 10 },
-      { id: "gn", name: "GN Drives", price: 420, base: 420, owned: 2 },
-      { id: "psycho", name: "Psychoframe", price: 1250, base: 1250, owned: 0 }
+      { id: "luna", name: "Luna Titanium", price: 80, base: 80, owned: 25 },
+      { id: "gn", name: "GN Condenser Drives", price: 420, base: 420, owned: 5 },
+      { id: "psycho", name: "Psychoframe Mesh", price: 1250, base: 1250, owned: 1 },
+      { id: "zero", name: "ZERO System Cores", price: 4500, base: 4500, owned: 0 }
     ],
     auctions: [], auctionInterval: null
   };
 
-  /* ================= UTILS & ASCENT ================= */
   function fmt(n) { return Math.floor(n).toLocaleString(); }
   function toast(msg) {
     const rack = document.getElementById('toast-rack');
     const el = document.createElement('div'); el.className = 'toast'; el.innerHTML = msg;
-    rack.appendChild(el); setTimeout(() => el.remove(), 3500);
+    rack.appendChild(el); setTimeout(() => el.remove(), 3200);
   }
-  function godMode() { State.credits+=100000000; State.glory+=10000; toast("GOD MODE: +100M Credits"); updateHUD(); renderHangar(); }
-  
+  function godMode() { State.credits += 1000000000; State.glory += 50000; toast("OVERRIDE: +1 BILLION Credits"); updateHUD(); renderHangar(); }
+
   function getAscentRank() {
     let w = State.arenaWins; if(w < 10) return "ROOKIE"; if(w < 25) return "VETERAN"; if(w < 50) return "ACE PILOT"; if(w < 100) return "NEWTYPE"; return "INNOVATOR";
   }
   function getAscentBonus() {
-    let w = State.arenaWins; if(w < 10) return 0; if(w < 25) return 0.15; if(w < 50) return 0.35; if(w < 100) return 0.75; return 1.50;
+    let w = State.arenaWins; if(w < 10) return 0; if(w < 25) return 0.20; if(w < 50) return 0.50; if(w < 100) return 1.0; return 2.50;
   }
 
   function getEffSuit(suit) {
     if(!suit) return null;
     let b = getAscentBonus();
     let s = JSON.parse(JSON.stringify(suit));
-    s.hp = Math.floor(s.hp * (1+b)); s.currentHp = s.hp;
-    s.atk = Math.floor(s.atk * (1+b)); s.def = Math.floor(s.def * (1+b)); s.spd = Math.floor(s.spd * (1+b));
-    s.power = Math.floor(s.power * (1+b));
+    s.hp = Math.floor(s.hp * (1 + b)); s.currentHp = s.hp;
+    s.atk = Math.floor(s.atk * (1 + b)); s.def = Math.floor(s.def * (1 + b)); s.spd = Math.floor(s.spd * (1 + b));
+    s.power = s.hp + s.atk + s.def + s.spd;
     return s;
   }
 
   function setTab(tabName) {
     document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); if(b.getAttribute('onclick').includes(tabName)) b.classList.add('active'); });
     document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
-    const targetTab = document.getElementById(`tab-${tabName}`); if(targetTab) targetTab.classList.add('active');
-    if(tabName === 'hangar') renderHangar(); if(tabName === 'exchange') renderMarket();
+    const target = document.getElementById(`tab-${tabName}`); if(target) target.classList.add('active');
+    if(tabName === 'hangar') renderHangar();
+    if(tabName === 'campaign') renderCampaign();
+    if(tabName === 'exchange') renderMarket();
   }
 
   function updateHUD() {
     document.getElementById('hud-credits').innerText = `₢${fmt(State.credits)}`;
     document.getElementById('hud-glory').innerText = fmt(State.glory);
-    document.getElementById('hud-hangar-count').innerText = State.hangar.length;
+    document.getElementById('hud-count').innerText = State.hangar.length;
+    document.getElementById('hud-alpha-count').innerText = State.alphaTeamUids.length;
     document.getElementById('hud-ascent').innerText = getAscentRank();
     renderEquippedTelemetry();
   }
 
-  /* ================= FABRICATION ================= */
+  /* ================= FABRICATOR ================= */
   function fabricate(count) {
-    let cost = count === 1 ? 2500 : 22500; if(State.credits < cost) { toast("Insufficient Credits."); return; }
-    State.credits -= cost; for(let i=0; i<count; i++) rollRandomSuit(false); updateHUD(); setTab('hangar');
+    let cost = count === 1 ? 5000 : 45000;
+    if(State.credits < cost) { toast("Insufficient Credits."); return; }
+    State.credits -= cost;
+    for(let i=0; i<count; i++) rollRandomSuit(false);
+    updateHUD(); setTab('hangar');
   }
+
   function fabricateElite() {
-    if(State.credits < 65000) { toast("₢65,000 required."); return; }
-    State.credits -= 65000; for(let i=0; i<10; i++) rollRandomSuit(true); updateHUD(); setTab('hangar');
+    if(State.credits < 150000) { toast("₢150,000 required."); return; }
+    State.credits -= 150000;
+    for(let i=0; i<10; i++) rollRandomSuit(true);
+    updateHUD(); setTab('hangar');
   }
 
   function rollRandomSuit(boosted, returnOnly = false) {
-    let roll = Math.random() * 100; let targetRarity = 0;
-    if(boosted) { targetRarity = 2; if(roll > 60) targetRarity = 3; if(roll > 85) targetRarity = 4; if(roll > 98) targetRarity = 5; } 
-    else { if(roll > 45) targetRarity = 1; if(roll > 75) targetRarity = 2; if(roll > 90) targetRarity = 3; if(roll > 97) targetRarity = 4; if(roll > 99.5) targetRarity = 5; }
-    let pool = MASTER_CODEX.filter(s => s.rarity === targetRarity);
+    let roll = Math.random() * 100;
+    let tIdx = 0;
+    if(boosted) {
+      tIdx = 3;
+      if(roll > 40) tIdx = 4;
+      if(roll > 65) tIdx = 5;
+      if(roll > 80) tIdx = 6;
+      if(roll > 92) tIdx = 7;
+      if(roll > 98) tIdx = 8;
+      if(roll > 99.7) tIdx = 9;
+    } else {
+      if(roll > 35) tIdx = 1;
+      if(roll > 60) tIdx = 2;
+      if(roll > 78) tIdx = 3;
+      if(roll > 89) tIdx = 4;
+      if(roll > 95) tIdx = 5;
+      if(roll > 98) tIdx = 6;
+      if(roll > 99.4) tIdx = 7;
+      if(roll > 99.8) tIdx = 8;
+      if(roll > 99.95) tIdx = 9;
+    }
+
+    let pool = MASTER_CODEX.filter(s => s.tierIndex === tIdx);
     let picked = pool[Math.floor(Math.random() * pool.length)];
     let instance = JSON.parse(JSON.stringify(picked));
     instance.uid = Date.now() + Math.random().toString(36).substring(2,7);
-    instance.fashionMods = 0; instance.mk = 0;
-    
+    instance.mk = 0;
+
     if(returnOnly) return instance;
 
     State.hangar.push(instance);
     if(!State.equippedId) State.equippedId = instance.uid;
-    toast(`Forged: <span style="color:${RARITIES[instance.rarity].color}">[${RARITIES[instance.rarity].name}] ${instance.name}</span>`);
+    toast(`Constructed: <span style="color:${instance.tierColor}">[T${instance.tierIndex+1}] ${instance.name}</span>`);
   }
 
-  /* ================= HANGAR & UPGRADES ================= */
+  /* ================= HANGAR ================= */
   function sortHangar(mode) { State.sortMode = mode; renderHangar(); }
+  function toggleAlpha(uid) {
+    let idx = State.alphaTeamUids.indexOf(uid);
+    if(idx > -1) {
+      State.alphaTeamUids.splice(idx, 1);
+      toast("Removed from Alpha Team.");
+    } else {
+      if(State.alphaTeamUids.length >= 3) { toast("Alpha Team full (Max 3)."); return; }
+      State.alphaTeamUids.push(uid);
+      toast("Assigned to Alpha Team.");
+    }
+    updateHUD(); renderHangar();
+  }
+
   function renderHangar() {
     const grid = document.getElementById('hangar-grid'); grid.innerHTML = '';
-    if(State.hangar.length === 0) { grid.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-dim); font-size:12px;">Hangar is empty.</div>`; renderEquippedTelemetry(); return; }
+    if(State.hangar.length === 0) {
+      grid.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-dim); font-size:11px;">Hangar bay is empty. Procure suits.</div>`;
+      renderEquippedTelemetry(); return;
+    }
 
     let sorted = [...State.hangar];
     if(State.sortMode === 'power') sorted.sort((a,b) => b.power - a.power);
-    if(State.sortMode === 'rarity') sorted.sort((a,b) => b.rarity - a.rarity);
+    if(State.sortMode === 'tier') sorted.sort((a,b) => b.tierIndex - a.tierIndex);
 
     sorted.forEach(s => {
-      let isEq = s.uid === State.equippedId; let r = RARITIES[s.rarity];
+      let isEq = s.uid === State.equippedId;
+      let isAlpha = State.alphaTeamUids.includes(s.uid);
       let mkLabel = s.mk > 0 ? ` Mk. ${romanize(s.mk)}` : "";
-      const card = document.createElement('div'); card.className = `suit-card ${isEq ? 'equipped' : ''}`; card.style.borderColor = r.color;
+
+      const card = document.createElement('div');
+      card.className = `suit-card ${isEq ? 'equipped' : ''} ${isAlpha ? 'alpha-tagged' : ''}`;
+      card.style.borderColor = s.tierColor;
       card.innerHTML = `
-        <div class="suit-meta"><span>${s.code}</span><span style="color:${r.color}; font-weight:bold;">${r.name}</span></div>
-        <div class="suit-name" style="color:${r.color};">${s.name}${mkLabel}</div>
-        <div class="suit-stats"><span>PWR: ${fmt(s.power)}</span><span>HP: ${fmt(s.hp)}</span><span>ATK: ${fmt(s.atk)}</span><span>DEF: ${fmt(s.def)}</span></div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-          <span style="font-size:11px; color:var(--term-gold); font-weight:bold;">₢${fmt(s.value)}</span>
-          <div style="display:flex; gap:4px;">
-            ${!isEq ? `<button class="action-btn" style="padding:6px; font-size:9px;" onclick="equipSuit('${s.uid}')">Deploy</button>` : ''}
-            ${!isEq ? `<button class="action-btn gold-btn" style="padding:6px; font-size:9px;" onclick="initAuction('${s.uid}')">Auction</button>` : ''}
-            <button class="action-btn red-btn" style="padding:6px; font-size:9px;" onclick="sellSuit('${s.uid}')">Sell</button>
+        <div class="suit-meta">
+          <span>${s.code}</span>
+          <span style="color:${s.tierColor}; font-weight:bold;">${s.tierName.split(':')[0]}</span>
+        </div>
+        <div class="suit-name" style="color:${s.tierColor};">${s.name}${mkLabel}</div>
+        <div class="suit-stats">
+          <span>PWR: ${fmt(s.power)}</span>
+          <span>HP: ${fmt(s.hp)}</span>
+          <span>ATK: ${fmt(s.atk)}</span>
+          <span>DEF: ${fmt(s.def)}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+          <span style="font-size:10px; color:var(--term-gold); font-weight:bold;">VAL: ₢${fmt(s.value)}</span>
+          <div style="display:flex; gap:3px;">
+            <button class="action-btn purple-btn" style="padding:4px 6px; font-size:8px;" onclick="toggleAlpha('${s.uid}')">${isAlpha ? 'Alpha ✓' : '+Alpha'}</button>
+            ${!isEq ? `<button class="action-btn" style="padding:4px 6px; font-size:8px;" onclick="equipSuit('${s.uid}')">Solo</button>` : ''}
+            ${!isEq && !isAlpha ? `<button class="action-btn gold-btn" style="padding:4px 6px; font-size:8px;" onclick="initAuction('${s.uid}')">Auction</button>` : ''}
+            ${!isEq && !isAlpha ? `<button class="action-btn red-btn" style="padding:4px 6px; font-size:8px;" onclick="sellSuit('${s.uid}')">80%</button>` : ''}
           </div>
         </div>
       `;
@@ -423,50 +556,53 @@
     renderEquippedTelemetry();
   }
 
-  function equipSuit(uid) { State.equippedId = uid; renderHangar(); toast("Mobile Suit deployed."); }
-  
+  function equipSuit(uid) { State.equippedId = uid; renderHangar(); toast("Solo Vanguard unit deployed."); }
   function sellSuit(uid) {
-    if(State.equippedId === uid) State.equippedId = null;
     let idx = State.hangar.findIndex(s => s.uid === uid);
-    if(idx > -1) { let sellVal = Math.floor(State.hangar[idx].value * 0.80); State.credits += sellVal; State.hangar.splice(idx, 1); toast(`Sold for ₢${fmt(sellVal)}.`); updateHUD(); renderHangar(); }
+    if(idx > -1) {
+      let sellVal = Math.floor(State.hangar[idx].value * 0.80);
+      State.credits += sellVal;
+      State.hangar.splice(idx, 1);
+      toast(`Sold for ₢${fmt(sellVal)}.`);
+      updateHUD(); renderHangar();
+    }
   }
 
-  function quickSell(maxRarity) {
-    let toScrap = State.hangar.filter(s => s.rarity <= maxRarity && s.uid !== State.equippedId);
-    if(toScrap.length === 0) return;
-    let totalCredits = 0; toScrap.forEach(s => { totalCredits += Math.floor(s.value * 0.80); });
-    State.hangar = State.hangar.filter(s => s.rarity > maxRarity || s.uid === State.equippedId);
-    State.credits += totalCredits; toast(`Liquidated ${toScrap.length} units for +₢${fmt(totalCredits)}.`); updateHUD(); renderHangar();
-  }
-
-  function applyFashion(uid) {
-    if(State.credits < 5000) { toast("₢5,000 required for Paint."); return; }
-    let s = State.hangar.find(x => x.uid === uid); if(!s) return;
-    State.credits -= 5000; s.fashionMods += 1;
-    s.hp = Math.floor(s.hp * 1.08); s.atk = Math.floor(s.atk * 1.08); s.def = Math.floor(s.def * 1.08); s.spd = Math.floor(s.spd * 1.08);
-    s.power = s.hp + s.atk + s.def + s.spd; s.value = Math.floor(s.value * 1.15);
-    toast(`Cyan/Gray Splinter Camo Applied. Base Power +8%!`); updateHUD(); renderHangar();
+  function quickSell(maxTier) {
+    let toSell = State.hangar.filter(s => s.tierIndex <= maxTier && s.uid !== State.equippedId && !State.alphaTeamUids.includes(s.uid));
+    if(toSell.length === 0) { toast("No valid unequipped units."); return; }
+    let total = 0;
+    toSell.forEach(s => total += Math.floor(s.value * 0.80));
+    State.hangar = State.hangar.filter(s => s.tierIndex > maxTier || s.uid === State.equippedId || State.alphaTeamUids.includes(s.uid));
+    State.credits += total;
+    toast(`Liquidated ${toSell.length} suits for +₢${fmt(total)}.`);
+    updateHUD(); renderHangar();
   }
 
   function upgradeMech(frac) {
     let eq = State.hangar.find(s => s.uid === State.equippedId); if(!eq) return;
-    let cost = 5000; let maxAfford = Math.floor(State.credits / cost); let toBuy = 0;
-    if(frac === '1') toBuy = 1; else if(frac === '1/2') toBuy = Math.max(1, Math.floor(maxAfford / 2)); else if(frac === 'max') toBuy = maxAfford;
-    if(toBuy === 0 || State.credits < cost) { toast("Insufficient Credits."); return; }
+    let cost = Math.max(5000, Math.floor(eq.power * 0.05));
+    let maxAfford = Math.floor(State.credits / cost);
+    let toBuy = 0;
+    if(frac === '1') toBuy = 1;
+    else if(frac === '1/2') toBuy = Math.max(1, Math.floor(maxAfford / 2));
+    else if(frac === 'max') toBuy = maxAfford;
+
+    if(toBuy <= 0 || State.credits < cost) { toast("Insufficient Credits."); return; }
 
     State.credits -= toBuy * cost;
     eq.mk = (eq.mk || 0) + toBuy;
 
     for(let i=0; i<toBuy; i++) {
-        let mult = 0.33 + (Math.random() * 3.0);
-        let target = Math.floor(Math.random() * 5); 
-        if(target === 0 || target === 4) eq.hp += Math.floor(eq.baseHp * mult);
-        if(target === 1 || target === 4) eq.atk += Math.floor(eq.baseAtk * mult);
-        if(target === 2 || target === 4) eq.def += Math.floor(eq.baseDef * mult);
-        if(target === 3 || target === 4) eq.spd += Math.floor(eq.baseSpd * mult);
+      let mult = 0.33 + (Math.random() * 3.0);
+      let target = Math.floor(Math.random() * 5);
+      if(target === 0 || target === 4) eq.hp += Math.floor(eq.baseHp * mult);
+      if(target === 1 || target === 4) eq.atk += Math.floor(eq.baseAtk * mult);
+      if(target === 2 || target === 4) eq.def += Math.floor(eq.baseDef * mult);
+      if(target === 3 || target === 4) eq.spd += Math.floor(eq.baseSpd * mult);
     }
     eq.power = eq.hp + eq.atk + eq.def + eq.spd;
-    eq.value = Math.floor(eq.value * Math.pow(1.1, toBuy)); 
+    eq.value = Math.floor(eq.power * 1.8);
     toast(`Upgraded ${toBuy}x to Mk. ${romanize(eq.mk)}!`);
     updateHUD(); renderHangar();
   }
@@ -474,53 +610,53 @@
   function renderEquippedTelemetry() {
     const p = document.getElementById('equipped-panel');
     let baseEq = State.hangar.find(s => s.uid === State.equippedId);
-    if(!baseEq) { p.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-dim); font-size:12px;">No Mobile Suit deployed.</div>`; return; }
-    
-    let eq = getEffSuit(baseEq); 
-    let r = RARITIES[eq.rarity];
+    if(!baseEq) { p.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-dim); font-size:11px;">No Mobile Suit deployed.</div>`; return; }
+    let eq = getEffSuit(baseEq);
     let mkLabel = eq.mk > 0 ? ` Mk. ${romanize(eq.mk)}` : "";
-    let ascBonus = getAscentBonus();
-    let ascLabel = ascBonus > 0 ? `<div style="color:var(--term-purple); font-size:11px; font-weight:bold; margin-bottom:8px;">[+${ascBonus*100}% ASCENSION BOOST APPLIED]</div>` : '';
+    let cost = Math.max(5000, Math.floor(baseEq.power * 0.05));
 
     p.innerHTML = `
-      <div style="border-left: 3px solid ${r.color}; padding-left: 8px; margin-bottom:8px;">
-        <div style="font-size:9px; color:${r.color}; text-transform:uppercase;">${r.name} FRAME [PWR: ${fmt(eq.power)}]</div>
-        <div style="font-size:15px; font-weight:bold; color:#fff; line-height:1.2;">${eq.name}${mkLabel} <br>${eq.fashionMods > 0 ? `<span style="color:var(--term-cyan); font-size:11px;">[+${eq.fashionMods} Paint]</span>` : ''}</div>
+      <div style="border-left: 3px solid ${eq.tierColor}; padding-left: 8px; margin-bottom:8px;">
+        <div style="font-size:9px; color:${eq.tierColor}; text-transform:uppercase;">${eq.tierName} [PWR: ${fmt(eq.power)}]</div>
+        <div style="font-size:14px; font-weight:bold; color:#fff;">${eq.name}${mkLabel}</div>
+        <div style="font-size:10px; color:var(--text-dim);">${eq.code}</div>
       </div>
-      ${ascLabel}
-      <div style="background:#000; padding:10px; border:1px solid var(--panel-border); font-size:11px; display:flex; flex-direction:column; gap:6px; margin-bottom:12px;">
+      <div style="background:#000; padding:8px; border:1px solid var(--panel-border); font-size:10px; display:flex; flex-direction:column; gap:4px; margin-bottom:8px;">
         <div style="display:flex; justify-content:space-between;"><span>ARMOR:</span><span style="color:var(--term-green); font-weight:bold;">${fmt(eq.hp)}</span></div>
         <div style="display:flex; justify-content:space-between;"><span>BEAM ATK:</span><span style="color:var(--term-red); font-weight:bold;">${fmt(eq.atk)}</span></div>
         <div style="display:flex; justify-content:space-between;"><span>SHIELD DEF:</span><span style="color:var(--term-cyan); font-weight:bold;">${fmt(eq.def)}</span></div>
         <div style="display:flex; justify-content:space-between;"><span>THRUST SPD:</span><span style="color:var(--term-gold); font-weight:bold;">${fmt(eq.spd)}</span></div>
       </div>
-      <div style="font-size:10px; color:var(--term-cyan); margin-bottom:6px;">Endless Mk. Upgrades (₢5,000 / each)</div>
-      <div class="fraction-row" style="margin-bottom:10px;">
+      <div style="font-size:9px; color:var(--term-cyan); margin-bottom:4px;">Mk. Upgrade Tuning (₢${fmt(cost)} / upgrade)</div>
+      <div class="fraction-row">
         <button class="action-btn" onclick="upgradeMech('1')">Buy 1</button>
         <button class="action-btn" onclick="upgradeMech('1/2')">Buy 1/2</button>
         <button class="action-btn" onclick="upgradeMech('max')">Buy MAX</button>
       </div>
-      <button class="action-btn purple-btn" style="width:100%; padding:12px; font-size:10px;" onclick="applyFashion('${eq.uid}')">Apply Splinter Paint (₢5,000) -> +8% Base Stats</button>
     `;
   }
 
-  /* ================= ARENA ================= */
+  /* ================= 1V1 ARENA ================= */
   function startBattle() {
-    let basePlayer = State.hangar.find(s => s.uid === State.equippedId); if(!basePlayer) { toast("Deploy a suit first."); return; }
-    if(State.credits < 1000) { toast("₢1,000 fee required."); return; } if(State.inBattle) return;
-    State.credits -= 1000; updateHUD();
+    let basePlayer = State.hangar.find(s => s.uid === State.equippedId);
+    if(!basePlayer) { toast("Deploy a solo suit first."); return; }
+    if(State.credits < 2000) { toast("₢2,000 arena fee required."); return; }
+    if(State.inBattle) return;
 
-    let player = getEffSuit(basePlayer); 
-
+    State.credits -= 2000; updateHUD();
+    let player = getEffSuit(basePlayer);
     let isBoss = ((State.arenaWins + 1) % 5 === 0);
-    let rivalPool = MASTER_CODEX.filter(s => Math.abs(s.rarity - (isBoss ? Math.min(5, player.rarity+1) : player.rarity)) <= 1);
-    let rivalTemplate = rivalPool[Math.floor(Math.random() * rivalPool.length)];
-    State.enemySuit = JSON.parse(JSON.stringify(rivalTemplate));
-    
-    let eScale = Math.max(1.0, player.power / (State.enemySuit.power || 1));
-    if(isBoss) eScale *= 1.5;
 
-    State.enemySuit.hp = Math.floor(State.enemySuit.hp * eScale); State.enemySuit.currentHp = State.enemySuit.hp;
+    let targetTier = isBoss ? Math.min(9, player.tierIndex + 1) : player.tierIndex;
+    let pool = MASTER_CODEX.filter(s => s.tierIndex === targetTier);
+    let rivalTemplate = pool[Math.floor(Math.random() * pool.length)];
+    State.enemySuit = JSON.parse(JSON.stringify(rivalTemplate));
+
+    let eScale = Math.max(0.9, player.power / (State.enemySuit.power || 1));
+    if(isBoss) eScale *= 1.4;
+
+    State.enemySuit.hp = Math.floor(State.enemySuit.hp * eScale);
+    State.enemySuit.currentHp = State.enemySuit.hp;
     State.enemySuit.atk = Math.floor(State.enemySuit.atk * eScale);
     State.enemySuit.def = Math.floor(State.enemySuit.def * eScale);
     State.enemySuit.spd = Math.floor(State.enemySuit.spd * eScale);
@@ -529,117 +665,306 @@
     if(isBoss) State.enemySuit.name = "BOSS: " + State.enemySuit.name;
 
     State.combatPlayer = player;
+    State.combatPlayer.currentHp = player.hp;
 
     document.getElementById('p-name').innerText = player.name + (player.mk>0?` Mk. ${romanize(player.mk)}`:'');
-    document.getElementById('p-asc-label').innerText = getAscentBonus() > 0 ? `[+${getAscentBonus()*100}% ASCENSION]` : '';
+    document.getElementById('p-asc-label').innerText = getAscentBonus() > 0 ? `[+${getAscentBonus()*100}% ASCENSION BONUS]` : '';
     document.getElementById('p-stats').innerText = `PWR: ${fmt(player.power)} | HP: ${fmt(player.hp)}`;
     document.getElementById('e-name').innerText = State.enemySuit.name;
     document.getElementById('e-name').style.color = isBoss ? "var(--term-boss)" : "var(--term-red)";
     document.getElementById('vs-divider').style.color = isBoss ? "var(--term-boss)" : "var(--term-red)";
     document.getElementById('e-stats').innerText = `PWR: ${fmt(State.enemySuit.power)} | HP: ${fmt(State.enemySuit.hp)}`;
 
-    document.getElementById('btn-battle').disabled = true; document.getElementById('btn-retreat').disabled = false;
-    document.getElementById('combat-log').innerHTML = ''; logCombat("SYS", isBoss ? `WARNING: BOSS ENCOUNTER DETECTED!` : `Target locked.`, isBoss ? "var(--term-boss)" : "#00f0ff");
+    document.getElementById('btn-battle').disabled = true;
+    document.getElementById('btn-retreat').disabled = false;
+    document.getElementById('combat-log').innerHTML = '';
+    logCombat("SYS", isBoss ? "ALERT: COLONY BOSS SIGHTED!" : "Target acquired. Engagement started.", isBoss ? "var(--term-boss)" : "#00f0ff");
 
-    State.inBattle = true; State.battleInterval = setInterval(() => combatRound(isBoss), 800);
+    State.inBattle = true;
+    State.battleInterval = setInterval(() => combatRound(isBoss), 750);
   }
 
   function combatRound(isBoss) {
     let p = State.combatPlayer; let e = State.enemySuit; if(!p || !e) { endBattle(); return; }
     let actors = p.spd >= e.spd ? [{ atk: p, def: e, isP: true }, { atk: e, def: p, isP: false }] : [{ atk: e, def: p, isP: false }, { atk: p, def: e, isP: true }];
+
     for(let action of actors) {
       if(action.atk.currentHp <= 0) continue;
-      let dmg = Math.max(10, Math.floor((action.atk.atk * (1.2 + Math.random()*0.4)) - (action.def.def * 0.4)));
+      let dmg = Math.max(25, Math.floor((action.atk.atk * (1.1 + Math.random()*0.3)) - (action.def.def * 0.35)));
       let crit = Math.random() < 0.15; if(crit) dmg = Math.floor(dmg * 1.8);
       action.def.currentHp = Math.max(0, action.def.currentHp - dmg);
-      logCombat(action.isP ? "[YOU]" : "[RIVAL]", `strikes for ${fmt(dmg)}! ${crit ? 'CRIT!' : ''}`, action.isP ? "var(--term-cyan)" : (isBoss ? "var(--term-boss)" : "var(--term-red)"));
+
+      let logColor = action.isP ? "var(--term-cyan)" : (isBoss ? "var(--term-boss)" : "var(--term-red)");
+      logCombat(action.isP ? "[YOU]" : "[RIVAL]", `scores hit for ${fmt(dmg)} DMG! ${crit ? 'CRITICAL!' : ''}`, logColor);
       updateBattleBars();
+
       if(action.def.currentHp <= 0) {
         if(action.isP) {
           State.arenaWins++;
-          let gloryGain = isBoss ? 250 : 25 + (e.rarity * 15); let bounty = isBoss ? Math.floor(e.value * 1.5) : Math.floor(e.value * 0.4);
-          State.glory += gloryGain; State.credits += bounty;
-          logCombat("ARENA", `Target annihilated! Rewarded +₢${fmt(bounty)} and +${gloryGain} Glory!`, "var(--term-green)"); toast(`VICTORY: +₢${fmt(bounty)}`);
-        } else { logCombat("CRITICAL", `Frame failure! Cockpit ejected safely.`, "var(--term-red)"); toast("DEFEAT: Retreated."); }
+          let bounty = isBoss ? Math.floor(e.value * 0.6) : Math.floor(e.value * 0.25);
+          let gloryGain = isBoss ? 350 : 35 + (e.tierIndex * 20);
+          State.credits += bounty; State.glory += gloryGain;
+          logCombat("ARENA", `Target eliminated! Bounty: +₢${fmt(bounty)} | Glory: +${gloryGain}`, "var(--term-green)");
+          toast(`VICTORY: +₢${fmt(bounty)}`);
+        } else {
+          logCombat("CRITICAL", "Armor breach! Cockpit ejected safely.", "var(--term-red)");
+          toast("DEFEAT: Ejected from battle.");
+        }
         endBattle(); return;
       }
     }
   }
+
   function updateBattleBars() {
     let p = State.combatPlayer; let e = State.enemySuit; if(!p || !e) return;
-    document.getElementById('p-hp').style.width = Math.max(0, (p.currentHp / p.hp) * 100) + '%'; document.getElementById('e-hp').style.width = Math.max(0, (e.currentHp / e.hp) * 100) + '%';
+    document.getElementById('p-hp').style.width = Math.max(0, (p.currentHp / p.hp) * 100) + '%';
+    document.getElementById('e-hp').style.width = Math.max(0, (e.currentHp / e.hp) * 100) + '%';
   }
-  function retreatBattle() { logCombat("SYS", "Emergency thrusters fired.", "var(--term-gold)"); endBattle(); }
+
+  function retreatBattle() { logCombat("SYS", "Emergency thruster abort.", "var(--term-gold)"); endBattle(); }
   function endBattle() {
     clearInterval(State.battleInterval); State.inBattle = false;
     document.getElementById('btn-battle').disabled = false; document.getElementById('btn-retreat').disabled = true;
     document.getElementById('arena-win-count').innerText = State.arenaWins;
-    document.getElementById('arena-boss-round').innerText = Math.ceil((State.arenaWins + 1) / 5) * 5; updateHUD();
+    document.getElementById('arena-boss-round').innerText = Math.ceil((State.arenaWins + 1) / 5) * 5;
+    updateHUD();
   }
+
   function logCombat(tag, txt, col) {
-    const box = document.getElementById('combat-log'); const row = document.createElement('div'); row.style.marginBottom = '2px'; row.innerHTML = `<span style="color:${col}; font-weight:bold;">${tag}:</span> ${txt}`; box.appendChild(row); box.scrollTop = box.scrollHeight;
+    const box = document.getElementById('combat-log'); const row = document.createElement('div');
+    row.style.marginBottom = '2px'; row.innerHTML = `<span style="color:${col}; font-weight:bold;">${tag}:</span> ${txt}`;
+    box.appendChild(row); box.scrollTop = box.scrollHeight;
+  }
+
+  /* ================= ALPHA 3V3 ROGUELITE CAMPAIGN ================= */
+  function renderCampaign() {
+    document.getElementById('campaign-stage').innerText = State.campaignStage;
+    const aBox = document.getElementById('alpha-team-display'); aBox.innerHTML = '';
+    let alphaUnits = State.hangar.filter(s => State.alphaTeamUids.includes(s.uid));
+
+    for(let i=0; i<3; i++) {
+      if(alphaUnits[i]) {
+        let u = getEffSuit(alphaUnits[i]);
+        aBox.innerHTML += `
+          <div class="team-member" style="border-color:${u.tierColor};">
+            <div style="color:${u.tierColor}; font-weight:bold; white-space:nowrap; overflow:hidden;">${u.name}</div>
+            <div style="color:var(--term-cyan);">PWR: ${fmt(u.power)}</div>
+            <div>HP: ${fmt(u.hp)}</div>
+          </div>
+        `;
+      } else {
+        aBox.innerHTML += `<div class="team-member" style="color:var(--text-dim); padding:14px 4px;">SLOT ${i+1}<br>[EMPTY]</div>`;
+      }
+    }
+
+    const eBox = document.getElementById('enemy-team-display'); eBox.innerHTML = '';
+    let avgPower = alphaUnits.length > 0 ? alphaUnits.reduce((acc, u) => acc + u.power, 0) / alphaUnits.length : 10000;
+    let stageMult = 1.0 + (State.campaignStage * 0.35);
+
+    for(let i=0; i<3; i++) {
+      let estPwr = Math.floor(avgPower * stageMult);
+      eBox.innerHTML += `
+        <div class="team-member" style="border-color:var(--term-red);">
+          <div style="color:var(--term-red); font-weight:bold;">RIVAL SQUAD ${i+1}</div>
+          <div style="color:#aaa;">EST PWR: ${fmt(estPwr)}</div>
+          <div style="color:var(--text-dim);">STAGE ${State.campaignStage}</div>
+        </div>
+      `;
+    }
+  }
+
+  function startCampaignFight() {
+    let alphaUnits = State.hangar.filter(s => State.alphaTeamUids.includes(s.uid));
+    if(alphaUnits.length < 3) { toast("Assign 3 Alpha Team units in Hangar first."); return; }
+    if(State.credits < 10000) { toast("₢10,000 campaign sortie fee required."); return; }
+    if(State.inCampaign) return;
+
+    State.credits -= 10000; updateHUD();
+    State.inCampaign = true;
+    document.getElementById('btn-campaign').disabled = true;
+
+    let stage = State.campaignStage;
+    let avgPwr = alphaUnits.reduce((a,b) => a + b.power, 0) / 3;
+    let stageMult = 1.0 + (stage * 0.35);
+
+    let enemies = [];
+    for(let i=0; i<3; i++) {
+      let randomTemplate = MASTER_CODEX[Math.floor(Math.random() * MASTER_CODEX.length)];
+      let e = JSON.parse(JSON.stringify(randomTemplate));
+      let scale = (avgPwr * stageMult) / (e.power || 1);
+      e.hp = Math.floor(e.hp * scale); e.currentHp = e.hp;
+      e.atk = Math.floor(e.atk * scale);
+      e.def = Math.floor(e.def * scale);
+      e.spd = Math.floor(e.spd * scale);
+      e.power = e.hp + e.atk + e.def + e.spd;
+      enemies.push(e);
+    }
+
+    let teamA = alphaUnits.map(u => {
+      let eff = getEffSuit(u);
+      eff.currentHp = eff.hp;
+      return eff;
+    });
+
+    const cLog = document.getElementById('campaign-log');
+    cLog.innerHTML = `<div style="color:var(--term-purple); font-weight:bold;">[STAGE ${stage}] 3v3 TEAM SKIRMISH COMMENCED!</div>`;
+
+    State.campaignInterval = setInterval(() => {
+      let aAlive = teamA.filter(u => u.currentHp > 0);
+      let eAlive = enemies.filter(u => u.currentHp > 0);
+
+      if(aAlive.length === 0 || eAlive.length === 0) {
+        clearInterval(State.campaignInterval);
+        State.inCampaign = false;
+        document.getElementById('btn-campaign').disabled = false;
+
+        if(aAlive.length > 0) {
+          if(State.campaignStage < 3) {
+            cLog.innerHTML += `<div style="color:var(--term-green); font-weight:bold;">STAGE ${stage} CLEARED! PREPARE FOR STAGE ${stage+1}</div>`;
+            State.campaignStage++;
+            toast(`STAGE ${stage} CLEARED!`);
+          } else {
+            cLog.innerHTML += `<div style="color:var(--term-gold); font-weight:bold;">CAMPAIGN MASTERED! ALL 3 LADDER STAGES CLEARED!</div>`;
+            
+            let rewardMsg = "";
+            for(let r=0; r<3; r++) {
+              let wonMech = JSON.parse(JSON.stringify(MASTER_CODEX[Math.floor(Math.random() * MASTER_CODEX.length)]));
+              wonMech.uid = Date.now() + Math.random().toString(36).substring(2,7);
+              let bonusMk = Math.floor(1 + Math.random() * 4);
+              wonMech.mk = bonusMk;
+              for(let m=0; m<bonusMk; m++) {
+                let mult = 0.5 + Math.random();
+                wonMech.hp += Math.floor(wonMech.baseHp * mult);
+                wonMech.atk += Math.floor(wonMech.baseAtk * mult);
+                wonMech.def += Math.floor(wonMech.baseDef * mult);
+                wonMech.spd += Math.floor(wonMech.baseSpd * mult);
+              }
+              wonMech.power = wonMech.hp + wonMech.atk + wonMech.def + wonMech.spd;
+              wonMech.value = Math.floor(wonMech.power * 1.8);
+              State.hangar.push(wonMech);
+              rewardMsg += `[T${wonMech.tierIndex+1}] ${wonMech.name} Mk.${romanize(bonusMk)}, `;
+            }
+            State.credits += 250000; State.glory += 1500;
+            cLog.innerHTML += `<div style="color:var(--term-cyan);">WON 3 REWARD MECHS: ${rewardMsg} +₢250,000, +1,500 Glory!</div>`;
+            toast("CAMPAIGN COMPLETED: 3 REWARD MECHS SECURED!");
+            State.campaignStage = 1;
+          }
+        } else {
+          cLog.innerHTML += `<div style="color:var(--term-red); font-weight:bold;">ALPHA TEAM WIPED OUT. CAMPAIGN RESET.</div>`;
+          toast("CAMPAIGN FAILED: Ladder reset.");
+          State.campaignStage = 1;
+        }
+        updateHUD(); renderCampaign();
+        return;
+      }
+
+      let strikerA = aAlive[Math.floor(Math.random() * aAlive.length)];
+      let targetE = eAlive[Math.floor(Math.random() * eAlive.length)];
+
+      let dmgA = Math.max(100, Math.floor((strikerA.atk * 0.9) - (targetE.def * 0.3)));
+      targetE.currentHp = Math.max(0, targetE.currentHp - dmgA);
+      cLog.innerHTML += `<div><span style="color:var(--term-cyan);">${strikerA.name}</span> deals ${fmt(dmgA)} DMG to ${targetE.name}!</div>`;
+
+      if(targetE.currentHp > 0) {
+        let dmgE = Math.max(100, Math.floor((targetE.atk * 0.9) - (strikerA.def * 0.3)));
+        strikerA.currentHp = Math.max(0, strikerA.currentHp - dmgE);
+        cLog.innerHTML += `<div><span style="color:var(--term-red);">${targetE.name}</span> returns fire for ${fmt(dmgE)} DMG!</div>`;
+      }
+      cLog.scrollTop = cLog.scrollHeight;
+    }, 600);
+  }
+
+  function resetCampaign() {
+    clearInterval(State.campaignInterval);
+    State.inCampaign = false;
+    State.campaignStage = 1;
+    document.getElementById('btn-campaign').disabled = false;
+    renderCampaign();
+    toast("Campaign progress reset to Stage 1.");
   }
 
   /* ================= 5-SLOT AUCTION ================= */
-  const FACTIONS = ["Anaheim","Zeon","Londo Bell","Celestial Being","Tekkadan","Titans","Ecoas","Vist Foundation"];
-  
+  const FACTIONS = ["Anaheim","Zeon Remnants","Londo Bell","Celestial Being","Tekkadan","Titans","Jupiter Empire","Vist Foundation"];
+
   function initAuction(uid) {
-    if(State.auctions.length >= 5) { toast("Auction board is full (5/5)."); return; }
+    if(State.auctions.length >= 5) { toast("All 5 auction blocks are full."); return; }
     let sIdx = State.hangar.findIndex(s => s.uid === uid); if(sIdx === -1) return;
     let suit = State.hangar[sIdx];
     State.hangar.splice(sIdx, 1);
-    State.auctions.push({ suit: suit, timer: 150, currentBid: Math.floor(suit.value * 0.33), log: [] });
+
+    State.auctions.push({
+      suit: suit,
+      baseVal: suit.value,
+      timer: 150,
+      currentBid: Math.floor(suit.value * 0.33),
+      log: []
+    });
+
     updateHUD(); renderHangar(); setTab('auction'); startAuctionLoop(); renderAuctions();
   }
 
   function fillAuctions() {
-    let availableSlots = 5 - State.auctions.length;
-    if(availableSlots <= 0) { toast("Auction board is full."); return; }
-    let candidates = State.hangar.filter(s => s.uid !== State.equippedId).sort((a,b) => a.value - b.value);
-    if(candidates.length === 0) { toast("No unequipped units available."); return; }
-    let toList = candidates.slice(0, availableSlots);
-    
+    let available = 5 - State.auctions.length;
+    if(available <= 0) { toast("Auction blocks are already full."); return; }
+
+    let candidates = State.hangar.filter(s => s.uid !== State.equippedId && !State.alphaTeamUids.includes(s.uid)).sort((a,b) => a.value - b.value);
+    if(candidates.length === 0) { toast("No eligible unequipped units."); return; }
+
+    let toList = candidates.slice(0, available);
     toList.forEach(s => {
       let idx = State.hangar.findIndex(x => x.uid === s.uid);
       State.hangar.splice(idx, 1);
-      State.auctions.push({ suit: s, timer: 150, currentBid: Math.floor(s.value * 0.33), log: [] });
+      State.auctions.push({
+        suit: s,
+        baseVal: s.value,
+        timer: 150,
+        currentBid: Math.floor(suit.value * 0.33),
+        log: []
+      });
     });
+
     updateHUD(); renderHangar(); setTab('auction'); startAuctionLoop(); renderAuctions();
   }
 
   function startAuctionLoop() {
     if(!State.auctionInterval) {
-        document.getElementById('auction-idle').style.display = 'none';
-        State.auctionInterval = setInterval(auctionMultiTick, 100);
+      document.getElementById('auction-idle').style.display = 'none';
+      State.auctionInterval = setInterval(auctionMultiTick, 100);
     }
   }
 
   function auctionMultiTick() {
-    if(State.auctions.length === 0) { clearInterval(State.auctionInterval); State.auctionInterval = null; document.getElementById('auction-idle').style.display = 'block'; renderAuctions(); return; }
-    
+    if(State.auctions.length === 0) {
+      clearInterval(State.auctionInterval); State.auctionInterval = null;
+      document.getElementById('auction-idle').style.display = 'block';
+      renderAuctions(); return;
+    }
+
     let needsRender = false;
     for(let i = State.auctions.length - 1; i >= 0; i--) {
       let a = State.auctions[i];
       a.timer--;
-      
-      if(Math.random() < 0.10) {
-        let faction = FACTIONS[Math.floor(Math.random() * FACTIONS.length)]; let mult = 1.05 + (Math.random() * 0.25);
-        if(Math.random() < 0.03) { mult = 2.0 + (Math.random() * 8.0); a.log.push(`<span style="color:var(--term-red)">[FLASH] ${faction} enters frenzy!</span>`); }
-        if(a.suit.rarity >= 4 && Math.random() < 0.01) { mult = 10.0 + (Math.random() * 33.0); a.log.push(`<span style="color:var(--term-gold)">[WAR] ${faction} bids out the room!</span>`); }
+
+      if(Math.random() < 0.12) {
+        let faction = FACTIONS[Math.floor(Math.random() * FACTIONS.length)];
+        let mult = 1.05 + (Math.random() * 0.25);
+        if(Math.random() < 0.03) { mult = 2.0 + (Math.random() * 8.0); a.log.push(`<span style="color:var(--term-red)">[FLASH] ${faction} spikes bid!</span>`); }
+        if(a.suit.tierIndex >= 7 && Math.random() < 0.01) { mult = 10.0 + (Math.random() * 30.0); a.log.push(`<span style="color:var(--term-gold)">[WAR] Syndicate war erupted!</span>`); }
+
         a.currentBid = Math.floor(a.currentBid * mult);
         a.log.push(`<span style="color:var(--term-cyan)">[${faction}] bids ₢${fmt(a.currentBid)}</span>`);
-        if(a.log.length > 3) a.log.shift(); 
+        if(a.log.length > 3) a.log.shift();
         needsRender = true;
       }
 
       if(a.timer <= 0) {
         State.credits += a.currentBid;
-        toast(`SOLD ${a.suit.name} for +₢${fmt(a.currentBid)}.`);
+        toast(`SOLD: ${a.suit.name} for +₢${fmt(a.currentBid)}!`);
         State.auctions.splice(i, 1);
         needsRender = true; updateHUD();
       }
     }
-    if(needsRender || State.auctions.length > 0) renderAuctions(); 
+    if(needsRender || State.auctions.length > 0) renderAuctions();
   }
 
   function renderAuctions() {
@@ -647,76 +972,126 @@
     document.getElementById('auction-count').innerText = State.auctions.length;
     board.innerHTML = '';
     State.auctions.forEach((a) => {
-        let pct = (a.timer / 150) * 100;
-        let htmlLog = a.log.map(l => `<div>${l}</div>`).join('');
-        board.innerHTML += `
-          <div class="auction-slot">
-            <div style="display:flex; justify-content:space-between; align-items:flex-end;">
-              <div><div style="font-size:9px; color:var(--text-dim); text-transform:uppercase;">Listing Lot:</div><div style="font-size:12px; font-weight:bold; color:var(--term-gold);">${a.suit.name}</div></div>
-              <div style="text-align:right;"><div style="font-size:9px; color:var(--text-dim); text-transform:uppercase;">Highest Bid:</div><div style="font-size:14px; font-weight:bold; color:var(--term-cyan);">₢${fmt(a.currentBid)}</div></div>
+      let pct = (a.timer / 150) * 100;
+      let htmlLog = a.log.map(l => `<div>${l}</div>`).join('');
+      board.innerHTML += `
+        <div class="auction-slot">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+            <div>
+              <div style="font-size:8px; color:var(--text-dim); text-transform:uppercase;">LOT [${a.suit.tierName.split(':')[0]}]:</div>
+              <div style="font-size:12px; font-weight:bold; color:var(--term-gold);">${a.suit.name}</div>
+              <div style="font-size:10px; color:var(--term-cyan); font-weight:bold; margin-top:2px;">BASE VAL: ₢${fmt(a.baseVal)}</div>
             </div>
-            <div class="auction-timer-bg"><div class="auction-timer-bar" style="width:${pct}%"></div></div>
-            <div style="background:#000; padding:6px; font-size:10px; height:50px; overflow:hidden;">${htmlLog}</div>
+            <div style="text-align:right;">
+              <div style="font-size:8px; color:var(--text-dim); text-transform:uppercase;">CURRENT BID:</div>
+              <div style="font-size:14px; font-weight:bold; color:var(--term-green);">₢${fmt(a.currentBid)}</div>
+            </div>
           </div>
-        `;
+          <div class="auction-timer-bg"><div class="auction-timer-bar" style="width:${pct}%"></div></div>
+          <div style="background:#000; padding:6px; font-size:9px; height:45px; overflow:hidden;">${htmlLog}</div>
+        </div>
+      `;
     });
   }
 
-  /* ================= EXCHANGE ================= */
+  /* ================= COMMODITY EXCHANGE ================= */
   function renderMarket() {
     const box = document.getElementById('market-rows'); box.innerHTML = '';
     State.market.forEach((m, idx) => {
-      let div = document.createElement('div'); div.className = 'market-card';
-      div.innerHTML = `<div style="display:flex; justify-content:space-between;"><strong>${m.name}</strong><span style="color:var(--term-gold);">₢${fmt(m.price)}</span></div>
-        <div style="font-size:10px; color:var(--text-dim);">Stock: ${fmt(m.owned)}</div>
-        <div class="fraction-row" style="margin-top:6px;"><button class="action-btn" onclick="tradeResource(${idx}, 'buy', 0.5)">BUY 1/2</button><button class="action-btn" onclick="tradeResource(${idx}, 'buy', 1)">BUY ALL</button><button class="action-btn gold-btn" onclick="tradeResource(${idx}, 'sell', 0.5)">SELL 1/2</button><button class="action-btn gold-btn" onclick="tradeResource(${idx}, 'sell', 1)">SELL ALL</button></div>`;
+      let div = document.createElement('div');
+      div.style.cssText = "background:#060910; border:1px solid var(--panel-border); padding:8px; display:flex; flex-direction:column; gap:6px;";
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; font-size:11px;">
+          <strong>${m.name}</strong>
+          <span style="color:var(--term-gold); font-weight:bold;">₢${fmt(m.price)} / unit</span>
+        </div>
+        <div style="font-size:9px; color:var(--text-dim);">Depot Stock: ${fmt(m.owned)}</div>
+        <div class="fraction-row">
+          <button class="action-btn" onclick="tradeResource(${idx}, 'buy', 0.5)">BUY 1/2</button>
+          <button class="action-btn" onclick="tradeResource(${idx}, 'buy', 1)">BUY ALL</button>
+          <button class="action-btn gold-btn" onclick="tradeResource(${idx}, 'sell', 0.5)">SELL 1/2</button>
+          <button class="action-btn gold-btn" onclick="tradeResource(${idx}, 'sell', 1)">SELL ALL</button>
+        </div>
+      `;
       box.appendChild(div);
     });
   }
+
   function tradeResource(idx, type, frac) {
     let item = State.market[idx];
-    if(type === 'buy') { let toBuy = Math.floor(Math.floor(State.credits / item.price) * frac); if(toBuy > 0) { State.credits -= toBuy * item.price; item.owned += toBuy; toast(`Acquired ${toBuy}x ${item.name}`); } } 
-    else { let toSell = Math.floor(item.owned * frac); if(toSell > 0) { State.credits += toSell * item.price; item.owned -= toSell; toast(`Sold ${toSell}x ${item.name}`); } }
+    if(type === 'buy') {
+      let toBuy = Math.floor(Math.floor(State.credits / item.price) * frac);
+      if(toBuy > 0) { State.credits -= toBuy * item.price; item.owned += toBuy; toast(`Acquired ${toBuy}x ${item.name}`); }
+    } else {
+      let toSell = Math.floor(item.owned * frac);
+      if(toSell > 0) { State.credits += toSell * item.price; item.owned -= toSell; toast(`Sold ${toSell}x ${item.name}`); }
+    }
     updateHUD(); renderMarket();
   }
-  setInterval(() => { State.market.forEach(m => { m.price = Math.max(10, Math.floor(m.base * (0.33 + Math.random() * 3.0))); }); if(document.getElementById('tab-exchange').classList.contains('active')) renderMarket(); }, 30000);
+
+  setInterval(() => {
+    State.market.forEach(m => {
+      m.price = Math.max(10, Math.floor(m.base * (0.33 + Math.random() * 3.0)));
+    });
+    if(document.getElementById('tab-exchange').classList.contains('active')) renderMarket();
+  }, 30000);
 
   /* ================= EXPEDITIONS ================= */
   function sendExpedition() {
-    if(State.credits < 10000) { toast("₢10,000 required for Expedition."); return; }
-    State.credits -= 10000;
-    
-    let resIndex = Math.floor(Math.random() * State.market.length);
+    if(State.credits < 15000) { toast("₢15,000 required for expedition."); return; }
+    State.credits -= 15000;
+
+    let resIdx = Math.floor(Math.random() * State.market.length);
     let resAmt = Math.floor(50 + Math.random() * 950);
-    State.market[resIndex].owned += resAmt;
+    State.market[resIdx].owned += resAmt;
 
     let eMech = rollRandomSuit(false, true);
-    let rUpgrades = Math.floor(1 + Math.random() * 3); 
+    let rUpgrades = Math.floor(1 + Math.random() * 3);
     eMech.mk = rUpgrades;
+
     for(let i=0; i<rUpgrades; i++) {
-        let mult = 0.33 + (Math.random() * 3.0);
-        let target = Math.floor(Math.random() * 5); 
-        if(target === 0 || target === 4) eMech.hp += Math.floor(eMech.baseHp * mult);
-        if(target === 1 || target === 4) eMech.atk += Math.floor(eMech.baseAtk * mult);
-        if(target === 2 || target === 4) eMech.def += Math.floor(eMech.baseDef * mult);
-        if(target === 3 || target === 4) eMech.spd += Math.floor(eMech.baseSpd * mult);
+      let mult = 0.33 + (Math.random() * 3.0);
+      let target = Math.floor(Math.random() * 5);
+      if(target === 0 || target === 4) eMech.hp += Math.floor(eMech.baseHp * mult);
+      if(target === 1 || target === 4) eMech.atk += Math.floor(eMech.baseAtk * mult);
+      if(target === 2 || target === 4) eMech.def += Math.floor(eMech.baseDef * mult);
+      if(target === 3 || target === 4) eMech.spd += Math.floor(eMech.baseSpd * mult);
     }
     eMech.power = eMech.hp + eMech.atk + eMech.def + eMech.spd;
-    eMech.value = Math.floor(eMech.value * Math.pow(1.1, rUpgrades));
+    eMech.value = Math.floor(eMech.power * 1.8);
     State.hangar.push(eMech);
 
     const log = document.getElementById('expedition-log');
-    log.innerHTML = `<div style="margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:8px;">
-      <span style="color:var(--term-cyan); font-weight:bold;">[FLEET RETURNED]</span><br>
-      <span style="color:var(--term-gold)">+${resAmt}x ${State.market[resIndex].name}</span><br>
-      Recovered modified unit: <span style="color:${RARITIES[eMech.rarity].color}; font-weight:bold;">${eMech.name} Mk. ${romanize(eMech.mk)}</span>.
-    </div>` + log.innerHTML;
-    
-    toast("Expedition Fleet Returned.");
+    log.innerHTML = `
+      <div style="margin-bottom:8px; border-bottom:1px solid #1c2b40; padding-bottom:4px;">
+        <span style="color:var(--term-cyan); font-weight:bold;">[SALVAGE FLEET REPORT]</span><br>
+        Salvaged +${resAmt}x ${State.market[resIdx].name}.<br>
+        Recovered unit: <span style="color:${eMech.tierColor}; font-weight:bold;">[T${eMech.tierIndex+1}] ${eMech.name} Mk.${romanize(eMech.mk)} (PWR: ${fmt(eMech.power)})</span>.
+      </div>
+    ` + log.innerHTML;
+
+    toast("Recon fleet safely returned.");
     updateHUD(); renderHangar();
   }
 
-  /* INIT */ rollRandomSuit(false); updateHUD();
+  function initUI() {
+    const tGrid = document.getElementById('tier-breakdown-grid');
+    TIERS.forEach(t => {
+      tGrid.innerHTML += `
+        <div style="background:#000; border:1px solid ${t.color}; padding:6px;">
+          <span style="color:${t.color}; font-weight:bold;">${t.name}</span><br>
+          <span style="color:var(--text-dim);">Min PWR: ${fmt(t.minPower)}</span>
+        </div>
+      `;
+    });
+
+    rollRandomSuit(false);
+    updateHUD();
+    renderCampaign();
+    renderMarket();
+  }
+
+  initUI();
 </script>
 </body>
 </html>
