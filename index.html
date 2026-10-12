@@ -3,38 +3,84 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Mecha Ascension: The Pit V6.3</title>
+<title>Mecha Ascension: The Pit V6.5</title>
 <style>
   :root {
-    --bg-base: #04060a; --panel-bg: #090e17; --panel-border: #142033;
-    --term-cyan: #00f0ff; --term-gold: #ffb700; --term-red: #ff3366;
-    --term-green: #00ff66; --term-purple: #bd00ff; --term-boss: #ff003c;
-    --text-dim: #6c7f99; --text-bright: #e3edf7;
-    --t0-col: #8c9ba5; --t1-col: #00e676; --t2-col: #00b0ff; --t3-col: #2979ff;
-    --t4-col: #d500f9; --t5-col: #bd00ff; --t6-col: #ff9100; --t7-col: #ff3d00;
-    --t8-col: #ff1744; --t9-col: #ffd700;
+    --bg-base: #04060a;
+    --panel-bg: #090e17;
+    --panel-border: #142033;
+    --term-cyan: #00f0ff;
+    --term-gold: #ffb700;
+    --term-red: #ff3366;
+    --term-green: #00ff66;
+    --term-purple: #bd00ff;
+    --term-boss: #ff003c;
+    --text-dim: #6c7f99;
+    --text-bright: #e3edf7;
+
+    --t0-col: #8c9ba5;
+    --t1-col: #00e676;
+    --t2-col: #00b0ff;
+    --t3-col: #2979ff;
+    --t4-col: #d500f9;
+    --t5-col: #bd00ff;
+    --t6-col: #ff9100;
+    --t7-col: #ff3d00;
+    --t8-col: #ff1744;
+    --t9-col: #ffd700;
   }
+
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, 'Consolas', 'Courier New', monospace; -webkit-tap-highlight-color: transparent; }
-  html, body { width: 100%; height: 100%; background: var(--bg-base); color: var(--text-bright); display: flex; flex-direction: column; overflow: hidden; }
-  body::before { content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%); z-index: 999; background-size: 100% 3px; pointer-events: none; }
-  header { flex-shrink: 0; background: #070b12; border-bottom: 2px solid var(--term-cyan); padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; z-index: 100; }
+
+  html, body {
+    width: 100%; height: 100%; background: var(--bg-base); color: var(--text-bright);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+
+  body::before {
+    content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+    z-index: 999; background-size: 100% 3px; pointer-events: none;
+  }
+
+  header {
+    flex-shrink: 0; background: #070b12; border-bottom: 2px solid var(--term-cyan);
+    padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; z-index: 100;
+  }
   .header-top { display: flex; justify-content: space-between; align-items: center; }
   .os-brand { font-size: 13px; font-weight: bold; color: var(--term-cyan); text-shadow: 0 0 8px var(--term-cyan); letter-spacing: 1px; }
+
   .hud-stats { display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
   .hud-stats::-webkit-scrollbar { display: none; }
   .hud-tag { background: rgba(0,0,0,0.7); border: 1px solid var(--panel-border); padding: 4px 8px; border-radius: 2px; font-size: 10px; flex-shrink: 0; }
   .hud-tag span { font-weight: bold; }
-  nav { flex-shrink: 0; display: flex; background: var(--panel-bg); border-bottom: 1px solid var(--panel-border); overflow-x: auto; white-space: nowrap; z-index: 99; -webkit-overflow-scrolling: touch; }
+
+  nav {
+    flex-shrink: 0; display: flex; background: var(--panel-bg); border-bottom: 1px solid var(--panel-border);
+    overflow-x: auto; white-space: nowrap; z-index: 99; -webkit-overflow-scrolling: touch;
+  }
   nav::-webkit-scrollbar { display: none; }
-  .nav-btn { flex: 0 0 auto; padding: 12px 14px; background: transparent; border: none; border-right: 1px solid var(--panel-border); color: var(--text-dim); font-size: 11px; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; }
+  .nav-btn {
+    flex: 0 0 auto; padding: 12px 14px; background: transparent; border: none; border-right: 1px solid var(--panel-border);
+    color: var(--text-dim); font-size: 11px; text-transform: uppercase; cursor: pointer; letter-spacing: 1px;
+  }
   .nav-btn.active { background: rgba(0, 240, 255, 0.15); color: var(--term-cyan); border-bottom: 2px solid var(--term-cyan); }
+
   main { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px; padding-bottom: 70px; }
   .view-tab { display: none; width: 100%; flex-direction: column; gap: 12px; }
   .view-tab.active { display: flex; }
+
   .panel { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 3px; padding: 12px; display: flex; flex-direction: column; }
-  .panel-header { font-size: 11px; font-weight: bold; color: var(--term-gold); text-transform: uppercase; letter-spacing: 1px; padding-bottom: 6px; margin-bottom: 8px; border-bottom: 1px dashed var(--panel-border); display: flex; flex-direction: column; gap: 6px; }
+  .panel-header {
+    font-size: 11px; font-weight: bold; color: var(--term-gold); text-transform: uppercase; letter-spacing: 1px;
+    padding-bottom: 6px; margin-bottom: 8px; border-bottom: 1px dashed var(--panel-border); display: flex; flex-direction: column; gap: 6px;
+  }
   .panel-header-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-  button.action-btn { background: rgba(0, 240, 255, 0.05); border: 1px solid var(--term-cyan); color: var(--term-cyan); padding: 8px 12px; cursor: pointer; text-transform: uppercase; font-size: 10px; font-weight: bold; border-radius: 2px; }
+
+  button.action-btn {
+    background: rgba(0, 240, 255, 0.05); border: 1px solid var(--term-cyan); color: var(--term-cyan);
+    padding: 8px 12px; cursor: pointer; text-transform: uppercase; font-size: 10px; font-weight: bold; border-radius: 2px;
+  }
   button.action-btn:active { background: var(--term-cyan); color: #000; }
   button.action-btn:disabled { border-color: #2b3340; color: #495566; }
   button.gold-btn { border-color: var(--term-gold); color: var(--term-gold); background: rgba(255, 183, 0, 0.05); }
@@ -43,25 +89,31 @@
   button.red-btn:active { background: var(--term-red); color: #000; }
   button.purple-btn { border-color: var(--term-purple); color: var(--term-purple); background: rgba(189, 0, 255, 0.05); }
   button.purple-btn:active { background: var(--term-purple); color: #000; }
+
   .hangar-grid { display: grid; grid-template-columns: 1fr; gap: 10px; width: 100%; }
   @media(min-width: 600px) { .hangar-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); } }
   .suit-card { background: #060910; border: 1px solid #142033; border-radius: 3px; padding: 12px; display: flex; flex-direction: column; gap: 6px; position: relative; }
   .suit-card.alpha-tagged { box-shadow: inset 0 0 15px rgba(189, 0, 255, 0.15); }
   .suit-card.equipped { box-shadow: inset 0 0 15px rgba(0, 255, 102, 0.15); }
   .suit-card.locked { opacity: 0.85; }
+  
   .vs-screen { display: flex; flex-direction: column; gap: 10px; background: #05080f; border: 1px solid var(--panel-border); padding: 12px; border-radius: 3px; }
   .hp-bar-bg { width: 100%; height: 14px; background: #111a28; border: 1px solid #23334d; border-radius: 2px; overflow: hidden; }
   .hp-bar-fill { height: 100%; width: 100%; background: var(--term-green); transition: width 0.2s ease; }
   .combat-log { height: 180px; background: #000; border: 1px solid var(--panel-border); padding: 8px; overflow-y: auto; font-size: 10px; line-height: 1.5; }
+
   .team-roster { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
   .team-member { background: #000; border: 1px solid var(--panel-border); padding: 8px; border-radius: 2px; font-size: 9px; text-align: center; }
+
   .auction-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
   .auction-slot { background: #060910; border: 1px solid var(--panel-border); padding: 12px; border-radius: 3px; display: flex; flex-direction: column; gap: 8px; }
   .auction-timer-bg { width: 100%; height: 6px; background: #111824; border: 1px solid var(--term-cyan); }
   .auction-timer-bar { height: 100%; width: 100%; background: var(--term-cyan); transition: width 0.1s linear; }
+
   .fraction-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  
   #toast-rack { position: fixed; bottom: 20px; left: 12px; right: 12px; display: flex; flex-direction: column; gap: 6px; z-index: 1000; pointer-events: none; }
-  .toast { background: #0a101a; border-left: 4px solid var(--term-cyan); color: var(--text-bright); padding: 12px 14px; font-size: 11px; box-shadow: 0 4px 15px rgba(0,0,0,0.9); animation: slideIn 0.2s, fadeOut 0.4s 3.2s forwards; pointer-events: auto; }
+  .toast { background: #0a101a; border-left: 4px solid var(--term-cyan); color: var(--text-bright); padding: 10px 12px; font-size: 11px; box-shadow: 0 4px 15px rgba(0,0,0,0.9); animation: slideIn 0.2s, fadeOut 0.4s 3.2s forwards; pointer-events: auto; }
   @keyframes slideIn { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
   @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
 </style>
@@ -70,7 +122,7 @@
 
 <header>
   <div class="header-top">
-    <div class="os-brand">MECHA ASCENSION: THE PIT V6.3</div>
+    <div class="os-brand">MECHA ASCENSION: THE PIT V6.5</div>
     <div style="display:flex; gap: 6px; align-items:center;">
       <button class="action-btn" style="padding:4px 8px; font-size:9px;" onclick="saveGame()">SAVE</button>
       <button class="action-btn" style="padding:4px 8px; font-size:9px;" onclick="loadGame()">LOAD</button>
@@ -387,7 +439,6 @@
     State.credits -= cost;
     for(let i=0; i<count; i++) rollBracketSuit(bIdx, false);
     updateHUD(); 
-    toast(`${count}x unit(s) constructed in Hangar.`);
   }
 
   function rollBracketSuit(bIdx, returnOnly = false, applyBossBuff = false) {
@@ -429,6 +480,7 @@
 
     State.hangar.push(instance);
     if(!State.equippedId) State.equippedId = instance.uid;
+    toast(`Forged: <span style="color:${instance.tierColor}">[T${instance.tierIndex+1}] ${instance.name}</span>`);
   }
 
   /* ================= HANGAR ================= */
@@ -455,7 +507,9 @@
     if(State.sortMode === 'tier') sorted.sort((a,b) => b.tierIndex - a.tierIndex);
 
     sorted.forEach(s => {
-      let isEq = s.uid === State.equippedId; let isAlpha = State.alphaTeamUids.includes(s.uid); let isLocked = State.lockedUids.includes(s.uid);
+      let isEq = s.uid === State.equippedId;
+      let isAlpha = State.alphaTeamUids.includes(s.uid);
+      let isLocked = State.lockedUids.includes(s.uid);
       let mkLabel = s.mk > 0 ? ` Mk. ${romanize(s.mk)}` : "";
 
       const card = document.createElement('div');
@@ -471,8 +525,8 @@
             <button class="action-btn purple-btn" style="padding:4px 6px; font-size:8px;" onclick="toggleAlpha('${s.uid}')">${isAlpha ? 'Alpha ✓' : '+Alpha'}</button>
             <button class="action-btn" style="padding:4px 6px; font-size:8px; color:#aaa; border-color:#aaa;" onclick="toggleLock('${s.uid}')">${isLocked ? 'Unlock' : 'Lock'}</button>
             ${!isEq ? `<button class="action-btn" style="padding:4px 6px; font-size:8px;" onclick="equipSuit('${s.uid}')">Solo</button>` : ''}
-            ${!isEq && !isAlpha && !isLocked ? `<button class="action-btn gold-btn" style="padding:4px 6px; font-size:8px;" onclick="initAuction('${s.uid}')">Auction</button>` : ''}
-            ${!isEq && !isAlpha && !isLocked ? `<button class="action-btn red-btn" style="padding:4px 6px; font-size:8px;" onclick="sellSuit('${s.uid}')">Sell</button>` : ''}
+            ${!isEq && !isAlpha && !isLocked ? `<button class="action-btn gold-btn" style="padding:4px 6px; font-size:8px;" onclick="initAuction('${s.uid}', event)">Auction</button>` : ''}
+            ${!isEq && !isAlpha && !isLocked ? `<button class="action-btn red-btn" style="padding:4px 6px; font-size:8px;" onclick="sellSuit('${s.uid}', event)">Sell</button>` : ''}
           </div>
         </div>
       `;
@@ -482,10 +536,19 @@
   }
 
   function equipSuit(uid) { State.equippedId = uid; renderHangar(); toast("Solo Vanguard unit deployed."); }
-  function sellSuit(uid) {
+  
+  function sellSuit(uid, e) {
     if(State.lockedUids.includes(uid)) return;
     let idx = State.hangar.findIndex(s => s.uid === uid);
-    if(idx > -1) { let sellVal = Math.floor(State.hangar[idx].value * 0.80); State.credits += sellVal; State.hangar.splice(idx, 1); toast(`Sold for CR ${fmt(sellVal)}.`); updateHUD(); renderHangar(); }
+    if(idx > -1) { 
+      if(e) { let card = e.target.closest('.suit-card'); if(card) card.remove(); }
+      let sellVal = Math.floor(State.hangar[idx].value * 0.80); 
+      State.credits += sellVal; 
+      State.hangar.splice(idx, 1); 
+      toast(`Sold for CR ${fmt(sellVal)}.`); 
+      updateHUD(); 
+      renderHangar(); 
+    }
   }
 
   function quickSell(maxTier) {
@@ -563,6 +626,7 @@
     State.credits -= 2000; updateHUD();
     let isBoss = ((State.arenaWins + 1) % 5 === 0);
 
+    // Solo scaling: Enemies scale ONLY on round count and ascension, completely ignoring player's power
     let eScale = 1.0 + (State.arenaWins * 0.15) + (State.ascension * 0.5);
     if(isBoss) eScale *= 2.0;
 
@@ -794,14 +858,17 @@
   /* ================= 5-SLOT AUCTION ================= */
   const FACTIONS = ["Anaheim","Zeon Remnants","Londo Bell","Celestial Being","Tekkadan","Titans","Jupiter Empire","Vist Foundation"];
 
-  function initAuction(uid) {
+  function initAuction(uid, e) {
     if(State.auctions.length >= 5) { toast("Auction board full."); return; }
     if(State.lockedUids.includes(uid)) { toast("Suit is locked."); return; }
     let sIdx = State.hangar.findIndex(s => s.uid === uid); if(sIdx === -1) return;
+    
+    if(e) { let card = e.target.closest('.suit-card'); if(card) card.remove(); }
+    
     let suit = State.hangar[sIdx]; State.hangar.splice(sIdx, 1);
 
     State.auctions.push({ suit: suit, baseVal: suit.value, timer: 150, currentBid: Math.floor(suit.value * 0.33), log: [] });
-    updateHUD(); toast("Listed for Auction."); startAuctionLoop(); renderAuctions(); 
+    updateHUD(); renderHangar(); startAuctionLoop(); renderAuctions(); toast("Suit listed for Auction.");
   }
 
   function fillAuctions() {
