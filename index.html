@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Mecha Ascension: The Pit V6.5</title>
+<title>Mecha Ascension: The Pit V6.6</title>
 <style>
   :root {
     --bg-base: #04060a;
@@ -90,6 +90,8 @@
   button.purple-btn { border-color: var(--term-purple); color: var(--term-purple); background: rgba(189, 0, 255, 0.05); }
   button.purple-btn:active { background: var(--term-purple); color: #000; }
 
+  input.neon-input { background: #000; border: 1px solid var(--term-cyan); color: var(--term-cyan); padding: 8px; font-weight: bold; text-transform: uppercase; border-radius: 2px; outline: none; font-family: monospace; }
+
   .hangar-grid { display: grid; grid-template-columns: 1fr; gap: 10px; width: 100%; }
   @media(min-width: 600px) { .hangar-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); } }
   .suit-card { background: #060910; border: 1px solid #142033; border-radius: 3px; padding: 12px; display: flex; flex-direction: column; gap: 6px; position: relative; }
@@ -122,7 +124,7 @@
 
 <header>
   <div class="header-top">
-    <div class="os-brand">MECHA ASCENSION: THE PIT V6.5</div>
+    <div class="os-brand">MECHA ASCENSION: THE PIT V6.6</div>
     <div style="display:flex; gap: 6px; align-items:center;">
       <button class="action-btn" style="padding:4px 8px; font-size:9px;" onclick="saveGame()">SAVE</button>
       <button class="action-btn" style="padding:4px 8px; font-size:9px;" onclick="loadGame()">LOAD</button>
@@ -133,7 +135,7 @@
     <div class="hud-tag">CREDITS: <span id="hud-credits" style="color:var(--term-gold);">CR 0</span></div>
     <div class="hud-tag">GLORY: <span id="hud-glory" style="color:var(--term-purple);">0</span></div>
     <div class="hud-tag">ASCENSION: <span id="hud-ascension" style="color:var(--term-red);">0</span></div>
-    <div class="hud-tag">SUITS: <span id="hud-count" style="color:#fff;">0</span>/2000</div>
+    <div class="hud-tag">SUITS: <span id="hud-count" style="color:#fff;">0</span>/UNLIMITED</div>
     <div class="hud-tag">ALPHA: <span id="hud-alpha-count" style="color:var(--term-cyan);">0</span>/3</div>
   </div>
 </header>
@@ -151,6 +153,17 @@
 <main>
   <!-- TAB 1: HANGAR -->
   <div id="tab-hangar" class="view-tab active">
+    
+    <!-- SYNDICATE TRADE HUB -->
+    <div class="panel">
+      <div class="panel-header" style="color:var(--term-cyan); border-color:var(--term-cyan);">Syndicate Trade Hub</div>
+      <p style="font-size:10px; color:var(--text-dim); margin-bottom:8px;">Import encrypted Base36 trade codes from other Pilots offline.</p>
+      <div style="display:flex; gap:6px; margin-bottom:4px;">
+          <input type="text" id="trade-input" class="neon-input" placeholder="ENTER TRADE CODE" style="flex:1;" maxlength="12">
+          <button class="action-btn" onclick="importSuit()">IMPORT</button>
+      </div>
+    </div>
+
     <div class="panel">
       <div class="panel-header">Deployed Solo Unit Telemetry</div>
       <div id="equipped-panel"></div>
@@ -200,7 +213,7 @@
         <div style="font-size:10px; color:var(--term-gold); font-weight:bold; margin-bottom:6px;">BRACKET OMEGA [Tiers VII - X]</div>
         <div style="display:flex; gap:6px;"><button class="action-btn gold-btn" style="flex:1;" onclick="fabricate(3, 1)">1x (CR 500K)</button><button class="action-btn gold-btn" style="flex:1;" onclick="fabricate(3, 3)">3x (CR 1.5M)</button></div>
       </div>
-      <div class="panel-header">10 Rarity Tiers Overview (2,000 Suit Roster)</div>
+      <div class="panel-header">10 Rarity Tiers Overview (320,000 Blueprints)</div>
       <div id="tier-breakdown-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:4px; font-size:9px; text-align:center;"></div>
     </div>
   </div>
@@ -261,7 +274,8 @@
     <div class="panel">
       <div class="panel-header"><div class="panel-header-row"><span>Colony Black Market Floor</span><span style="font-size:10px; color:var(--term-cyan);"><span id="auction-count">0</span>/5 ACTIVE</span></div></div>
       <button class="action-btn gold-btn" style="margin-bottom:10px; padding:10px;" onclick="fillAuctions()">Auto-Fill Board From Hangar</button>
-      <div id="auction-idle" style="text-align:center; padding: 20px; color:var(--text-dim); font-size:11px;">All 5 auction blocks are empty. Select units from Hangar to put on the block.</div>
+      <p style="font-size:10px; color:var(--text-dim); margin-bottom:10px;">Auctions last 20s. Sniping in the last 1s resets the clock to 3s. Start bid: 90% Val.</p>
+      <div id="auction-idle" style="text-align:center; padding: 20px; color:var(--text-dim); font-size:11px;">All 5 auction blocks are empty.</div>
       <div id="auction-board" class="auction-grid"></div>
     </div>
   </div>
@@ -293,11 +307,20 @@
 <div id="toast-rack"></div>
 
 <script>
-  /* ================= 2,000 PROCEDURAL GUNDAM ROSTER ================= */
-  const DESIGNATIONS = ["RX-78","MS-06","MSN-04","RX-93","MSZ-006","MS-09","RGM-79","MS-14","AMX-004","OZ-13MS","XXXG-00W0","GN-001","ZGMF-X10A","ASW-G-08","GF13-017NJ","Concept-X","System-99","F91","LM314V21","GX-9900","MSN-06S","RX-0","NZ-666","FA-78","MS-07","RGM-89","RGZ-91","PMX-003","AMX-002","RX-178","GAT-X105","ZGMF-X20A","GN-0000","ASW-G-11","GNX-603T","SVMS-01","MSN-00100","RMS-099","NRX-044","ORX-005","XM-X1","XM-X2","XM-X3","RX-104FF","RX-105","AGX-04","MSN-02","YMS-15","RGM-96X","RGZ-95"];
-  const PREFIXES = ["Proto","Strike","Custom","Heavy","Full Armor","Psycho","Hi-Nu","Banshee","Perfect","Re-GZ","G-Armor","Sniper","Command","Tactical","Shadow","Ver.Ka","Dual","Blitz","Aegis","Buster","Justice","Freedom","Destiny","Providence","Exia","Dynames","Kyrios","Virtue","Barbatos","Lupus","Gusion","Flauros","Bael","Kimaris","Vidar","Tallgeese","Epyon","Deathscythe","Heavyarms","Sandrock","Shenlong","Altron","Wing Zero","Master","Shining","God","Nobel","Turn A","Turn X","Unicorn","Apocalypse","Berserk","Carnage","Dreadnought","Cataclysm","Vindicator","Hellfire","Abyssal","Nemesis","Titan","Vanguard","Annihilator","Oblivion","Ragnarok","Hyperion","Thanatos","Colossus","Zeus","Archangel","Inferno","Phantom","Ghost","Specter","Reaper","Void","Nova","Solar","Lunar","Vortex","Pulsar"];
-  const CORES = ["Gundam","Zaku","Sazabi","Nu","Zeta","Dom","GM","Gelgoog","Qubeley","Epyon","Freedom","Exia","Barbatos","Sinanju","Kshatriya","Banshee","Phenex","Jegan","The-O","Hyaku-Shiki","Rick Dias","Gouf","Kampfer","Zeong","Tallgeese","Turn-A","V2-Assault","F91","Crossbone","G-Self","Calibarn","Aerial","Lfrith","Darilbalde","Pharact","Schwarzette","Michaelis","Beguir-Pente","Zowort","Grimgerde","Penelope","Xi","Gerbera","Gyan","ReZEL","Jesta","Byarlant","Gabthley","Hambrabi","Baund Doc"];
-  const SUFFIXES = ["Prime","MK-II","MK-III","Custom","Origin","Kai","Titan","Dominator","Zero","Infinity","Eclipse","Recon","Assault","Vanguard","Hazard","Ghost","Specter","Apex","Omega","Final Battle"];
+  /* ================= 320,000 PROCEDURAL GUNDAM ROSTER & 48 FACTIONS ================= */
+  const PREFIXES = ["Strike","Aegis","Buster","Blitz","Duel","Freedom","Justice","Providence","Destiny","Impulse","Wing","Heavyarms","Sandrock","Shenlong","Deathscythe","Tallgeese","Epyon","Astray","Exia","Dynames"]; // 20
+  const FRAMES = ["RX-78","MS-06","RGM-79","MSZ-006","RX-93","MSN-04","XXXG-01W","OZ-00MS","GN-001","ASW-G-08","ZGMF-X10A","ZGMF-X09A","RX-0","MSN-06S","GN-0000","F91","XM-X1","LM312V04","ZMT-S33S","AMX-004","ORB-01","MBF-P02","GAT-X105","RX-178","RMS-106","NRX-044","PMX-003","AMX-011","MSK-008","FA-78","RX-79","MS-07","MS-09","MS-14","YMS-15","MS-18E","AMX-107","RGZ-91","MSN-00100","RX-104FF"]; // 40
+  const CORES = ["Zero","Custom","Kai","Zwei","Drei","V2","Full Burnern","Stardust","Thunderbolt","Iron-Blooded","Reconguista","Build","Try","Divers","Breaker","Age-1","Age-2","Age-3","Age-FX","G-Self","Barbatos","Lupus","Rex","Bael","Vidar","Kimaris","Gusion","Rebake","Flauros","Marchosias","Hajiroboshi","Astaroth","Vual","Dantalion","Zagan","Asmoday","Gremory","Ose","Murmur","Sitri"]; // 40
+  const SUFFIXES = ["Type-A","Type-B","Type-C","Commander","Sniper","Heavy","High Mobility","Cannon","Custom","Awakened"]; // 10
+
+  const FACTIONS = [
+    "Earth Alliance", "ZAFT", "ORB Union", "Celestial Being", "Tekkadan", "Gjallarhorn", "Zeon Remnants", "Neo Zeon",
+    "Londo Bell", "Titans", "AEUG", "Crossbone Vanguard", "Jupiter Empire", "Zanscare Empire", "League Militaire", "OZ Faction",
+    "White Fang", "G-Team", "Vagan", "A-Laws", "Innovators", "Katharon", "Junk Guild", "Serpent Tail",
+    "Librarian Works", "Terminal", "Phantom Pain", "Blue Cosmos", "Sleeves", "Mafty", "Vist Foundation", "Anaheim Electronics",
+    "SNRI", "Bugs", "MacDaniel", "Kouen", "G-Hound", "Iron Cavalry", "Dawn of Fold", "Cathedra",
+    "Peil Technologies", "Jeturk Heavy Machinery", "Grassley Defense", "Shin Sei", "Ochs Earth", "Space Assembly", "Fronts", "Benerit Group"
+  ];
 
   const TIERS = [
     { tier: 1, name: "Tier I: Mass Production", color: "var(--t0-col)", mult: 1.0, minPower: 400 },
@@ -311,44 +334,6 @@
     { tier: 9, name: "Tier IX: Calamity Singularity", color: "var(--t8-col)", mult: 260.0, minPower: 650000 },
     { tier: 10, name: "Tier X: Apex Kirin God", color: "var(--t9-col)", mult: 520.0, minPower: 1000000 }
   ];
-
-  let MASTER_CODEX = [];
-  function buildCodex() {
-    let id = 1;
-    for(let d=0; d<DESIGNATIONS.length; d++){
-      for(let p=0; p<PREFIXES.length; p++){
-        for(let c=0; c<CORES.length; c++){
-          if(id > 2000) break;
-          let s = SUFFIXES[(d + p + c) % SUFFIXES.length];
-          let tIdx = Math.min(9, Math.floor((id - 1) / 200));
-          let tData = TIERS[tIdx];
-
-          let baseVal = Math.floor(250 + (id * 2.5));
-          let hp = Math.floor((baseVal * 1.5) * tData.mult);
-          let atk = Math.floor((baseVal * 0.45) * tData.mult);
-          let def = Math.floor((baseVal * 0.35) * tData.mult);
-          let spd = Math.floor((baseVal * 0.25) * tData.mult);
-          let power = hp + atk + def + spd;
-
-          if(tIdx === 9 && power < 1000000) {
-            let boost = 1000000 / power;
-            hp = Math.floor(hp * boost); atk = Math.floor(atk * boost); def = Math.floor(def * boost); spd = Math.floor(spd * boost);
-            power = hp + atk + def + spd;
-          }
-
-          MASTER_CODEX.push({
-            id: id, code: `${DESIGNATIONS[d]}-${String(id).padStart(4,'0')}`, name: `${PREFIXES[p]} ${CORES[c]} ${s}`,
-            tierIndex: tIdx, tierName: tData.name, tierColor: tData.color,
-            baseHp: hp, baseAtk: atk, baseDef: def, baseSpd: spd, hp: hp, atk: atk, def: def, spd: spd, power: power, value: Math.floor(power * 1.8)
-          });
-          id++;
-        }
-        if(id > 2000) break;
-      }
-      if(id > 2000) break;
-    }
-  }
-  buildCodex();
 
   function romanize(num) {
     if(isNaN(num) || num <= 0) return "";
@@ -388,15 +373,19 @@
   function godMode() { State.credits += 1000000000; State.glory += 50000; toast("OVERRIDE: +1 BILLION Credits"); updateHUD(); renderHangar(); }
 
   function saveGame() {
-    localStorage.setItem('pitOsV6', JSON.stringify(State));
+    localStorage.setItem('pitOsV6_6', JSON.stringify(State));
     toast("State saved to local memory.");
   }
   function loadGame() {
-    let saved = localStorage.getItem('pitOsV6');
+    let saved = localStorage.getItem('pitOsV6_6');
     if(saved) {
       State = JSON.parse(saved);
       if(!State.lockedUids) State.lockedUids = [];
       if(!State.ascension) State.ascension = 0;
+      
+      // Upgrade any old 150s auction timers to 20s
+      if(State.auctions) State.auctions.forEach(a => { if(a.timer > 20) a.timer = 20.0; });
+
       if(State.inCampaign) resetCampaign(true);
       if(State.inBattle) endBattle();
       updateHUD(); renderHangar(); renderMarket(); renderAuctions(); renderCampaign();
@@ -404,6 +393,106 @@
     } else {
       toast("No save data found.");
     }
+  }
+
+  /* ================= OFFLINE TRADE SYSTEM ================= */
+  function pad(n, width) {
+    n = n + '';
+    return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
+  }
+
+  function copyTradeCode(uid) {
+    let suit = State.hangar.find(s => s.uid === uid);
+    if(!suit) return;
+    
+    // Blueprint: 1 + Tier(1) + Pref(2) + Frame(2) + Core(2) + Suff(1) + BaseRoll(3) = 12 digits max
+    let rawStr = "1" + suit.tierIndex + pad(suit.pIdx, 2) + pad(suit.fIdx, 2) + pad(suit.cIdx, 2) + suit.sIdx + pad(suit.baseRoll, 3);
+    let compressedCode = parseInt(rawStr, 10).toString(36).toUpperCase();
+    
+    navigator.clipboard.writeText(compressedCode).then(() => {
+        toast(`Copied Trade Code: ${compressedCode}`);
+    }).catch(() => {
+        toast("Clipboard access denied. Code: " + compressedCode);
+    });
+  }
+
+  function importSuit() {
+    let inputEl = document.getElementById('trade-input');
+    if(!inputEl) return;
+    let code = inputEl.value.trim().toLowerCase();
+    if(!code) return;
+
+    let decodedNum = parseInt(code, 36);
+    if(isNaN(decodedNum)) { toast("Invalid code format."); return; }
+    
+    let rawStr = decodedNum.toString(10);
+    if(rawStr.length !== 12 || rawStr.charAt(0) !== '1') { toast("Corrupted Trade Data."); return; }
+
+    let tIdx = parseInt(rawStr.substring(1, 2), 10);
+    let pIdx = parseInt(rawStr.substring(2, 4), 10);
+    let fIdx = parseInt(rawStr.substring(4, 6), 10);
+    let cIdx = parseInt(rawStr.substring(6, 8), 10);
+    let sIdx = parseInt(rawStr.substring(8, 9), 10);
+    let baseRoll = parseInt(rawStr.substring(9, 12), 10);
+
+    if(tIdx < 0 || tIdx > 9 || pIdx < 0 || pIdx > 19 || fIdx < 0 || fIdx > 39 || cIdx < 0 || cIdx > 39 || sIdx < 0 || sIdx > 9 || baseRoll > 499) {
+        toast("Suit data out of bounds."); return;
+    }
+
+    let newSuit = createSuit({tIdx, pIdx, fIdx, cIdx, sIdx, baseRoll});
+    State.hangar.push(newSuit);
+    
+    inputEl.value = '';
+    toast(`Successfully Imported: ${newSuit.name}`);
+    updateHUD();
+    renderHangar();
+  }
+
+  /* ================= PROCEDURAL GENERATION ================= */
+  function createSuit(inputData) {
+      let pIdx, fIdx, cIdx, sIdx, tIdx, baseRoll;
+
+      if (typeof inputData === 'object') {
+          ({tIdx, pIdx, fIdx, cIdx, sIdx, baseRoll} = inputData);
+      } else {
+          tIdx = inputData;
+          pIdx = Math.floor(Math.random() * PREFIXES.length);
+          fIdx = Math.floor(Math.random() * FRAMES.length);
+          cIdx = Math.floor(Math.random() * CORES.length);
+          sIdx = Math.floor(Math.random() * SUFFIXES.length);
+          baseRoll = Math.floor(Math.random() * 500);
+      }
+
+      let p = PREFIXES[pIdx];
+      let f = FRAMES[fIdx];
+      let c = CORES[cIdx];
+      let s = SUFFIXES[sIdx];
+      let tData = TIERS[tIdx];
+
+      let baseVal = Math.floor(250 + (baseRoll * 10)); // scales 250 to 5240
+      let hp = Math.floor((baseVal * 1.5) * tData.mult);
+      let atk = Math.floor((baseVal * 0.45) * tData.mult);
+      let def = Math.floor((baseVal * 0.35) * tData.mult);
+      let spd = Math.floor((baseVal * 0.25) * tData.mult);
+      let power = hp + atk + def + spd;
+
+      if(tIdx === 9 && power < 1000000) {
+        let boost = 1000000 / power;
+        hp = Math.floor(hp * boost); atk = Math.floor(atk * boost); def = Math.floor(def * boost); spd = Math.floor(spd * boost);
+        power = hp + atk + def + spd;
+      }
+
+      let value = Math.floor(power * 1.8);
+
+      return {
+          uid: Date.now() + Math.random().toString(36).substring(2,8),
+          code: `${f}-${String(baseRoll).padStart(4,'0')}`,
+          name: `${p} ${c} ${s}`,
+          tierIndex: tIdx, tierName: tData.name, tierColor: tData.color,
+          baseHp: hp, baseAtk: atk, baseDef: def, baseSpd: spd, hp: hp, atk: atk, def: def, spd: spd, power: power, value: value,
+          mk: 0, fashionMods: 0,
+          pIdx: pIdx, fIdx: fIdx, cIdx: cIdx, sIdx: sIdx, baseRoll: baseRoll
+      };
   }
 
   /* ================= ASCENSION ================= */
@@ -454,11 +543,7 @@
     if(roll > 80) cTier = tiers[2];
     if(roll > 95) cTier = tiers[3];
 
-    let pool = MASTER_CODEX.filter(s => s.tierIndex === cTier);
-    let picked = pool[Math.floor(Math.random() * pool.length)];
-    let instance = JSON.parse(JSON.stringify(picked));
-    instance.uid = Date.now() + Math.random().toString(36).substring(2,8);
-    instance.mk = 0; instance.fashionMods = 0;
+    let instance = createSuit(cTier);
 
     if(applyBossBuff) {
         let rUpgrades = Math.floor(1 + Math.random() * 3);
@@ -524,6 +609,7 @@
           <div style="display:flex; flex-wrap:wrap; gap:3px; justify-content:flex-end;">
             <button class="action-btn purple-btn" style="padding:4px 6px; font-size:8px;" onclick="toggleAlpha('${s.uid}')">${isAlpha ? 'Alpha ✓' : '+Alpha'}</button>
             <button class="action-btn" style="padding:4px 6px; font-size:8px; color:#aaa; border-color:#aaa;" onclick="toggleLock('${s.uid}')">${isLocked ? 'Unlock' : 'Lock'}</button>
+            <button class="action-btn" style="padding:4px 6px; font-size:8px;" onclick="copyTradeCode('${s.uid}')">Code</button>
             ${!isEq ? `<button class="action-btn" style="padding:4px 6px; font-size:8px;" onclick="equipSuit('${s.uid}')">Solo</button>` : ''}
             ${!isEq && !isAlpha && !isLocked ? `<button class="action-btn gold-btn" style="padding:4px 6px; font-size:8px;" onclick="initAuction('${s.uid}', event)">Auction</button>` : ''}
             ${!isEq && !isAlpha && !isLocked ? `<button class="action-btn red-btn" style="padding:4px 6px; font-size:8px;" onclick="sellSuit('${s.uid}', event)">Sell</button>` : ''}
@@ -557,15 +643,6 @@
     let total = 0; toSell.forEach(s => total += Math.floor(s.value * 0.80));
     State.hangar = State.hangar.filter(s => s.tierIndex > maxTier || s.uid === State.equippedId || State.alphaTeamUids.includes(s.uid) || State.lockedUids.includes(s.uid));
     State.credits += total; toast(`Liquidated ${toSell.length} suits for +CR ${fmt(total)}.`); updateHUD(); renderHangar();
-  }
-
-  function applyFashion(uid) {
-    if(State.credits < 10000) { toast("CR 10,000 required for Paint."); return; }
-    let s = State.hangar.find(x => x.uid === uid); if(!s) return;
-    State.credits -= 10000; s.fashionMods += 1;
-    s.hp = Math.floor(s.hp * 1.08); s.atk = Math.floor(s.atk * 1.08); s.def = Math.floor(s.def * 1.08); s.spd = Math.floor(s.spd * 1.08);
-    s.power = s.hp + s.atk + s.def + s.spd; s.value = Math.floor(s.power * 1.8);
-    toast(`Cyan/Gray Splinter Camo Applied. Base Power +8%!`); updateHUD(); renderHangar();
   }
 
   function upgradeMech(frac) {
@@ -626,13 +703,11 @@
     State.credits -= 2000; updateHUD();
     let isBoss = ((State.arenaWins + 1) % 5 === 0);
 
-    // Solo scaling: Enemies scale ONLY on round count and ascension, completely ignoring player's power
     let eScale = 1.0 + (State.arenaWins * 0.15) + (State.ascension * 0.5);
     if(isBoss) eScale *= 2.0;
 
     let targetTier = isBoss ? Math.min(9, player.tierIndex + 1) : player.tierIndex;
-    let pool = MASTER_CODEX.filter(s => s.tierIndex === targetTier);
-    State.enemySuit = JSON.parse(JSON.stringify(pool[Math.floor(Math.random() * pool.length)]));
+    State.enemySuit = createSuit(targetTier);
 
     State.enemySuit.hp = Math.floor(State.enemySuit.hp * eScale); State.enemySuit.currentHp = State.enemySuit.hp;
     State.enemySuit.atk = Math.floor(State.enemySuit.atk * eScale);
@@ -784,8 +859,8 @@
     let eBox = document.getElementById('enemy-team-display'); eBox.innerHTML = '';
     let enemies = [];
     for(let i=0; i<3; i++) {
-      let pool = MASTER_CODEX.filter(s => eTiers.includes(s.tierIndex));
-      let eTemp = JSON.parse(JSON.stringify(pool[Math.floor(Math.random()*pool.length)]));
+      let randomTier = eTiers[Math.floor(Math.random() * eTiers.length)];
+      let eTemp = createSuit(randomTier);
       let scale = (baseE * stageMult) / (eTemp.power || 1);
       eTemp.hp = Math.floor(eTemp.hp * scale); eTemp.currentHp = eTemp.hp;
       eTemp.atk = Math.floor(eTemp.atk * scale); eTemp.def = Math.floor(eTemp.def * scale); eTemp.spd = Math.floor(eTemp.spd * scale);
@@ -855,9 +930,7 @@
     renderCampaign(); if(!silent) toast("Campaign reset.");
   }
 
-  /* ================= 5-SLOT AUCTION ================= */
-  const FACTIONS = ["Anaheim","Zeon Remnants","Londo Bell","Celestial Being","Tekkadan","Titans","Jupiter Empire","Vist Foundation"];
-
+  /* ================= 5-SLOT AUCTION (RETRO AUTO V1.4 OVERHAUL) ================= */
   function initAuction(uid, e) {
     if(State.auctions.length >= 5) { toast("Auction board full."); return; }
     if(State.lockedUids.includes(uid)) { toast("Suit is locked."); return; }
@@ -867,7 +940,7 @@
     
     let suit = State.hangar[sIdx]; State.hangar.splice(sIdx, 1);
 
-    State.auctions.push({ suit: suit, baseVal: suit.value, timer: 150, currentBid: Math.floor(suit.value * 0.33), log: [] });
+    State.auctions.push({ suit: suit, baseVal: suit.value, timer: 20.0, currentBid: Math.floor(suit.value * 0.90), log: [] });
     updateHUD(); renderHangar(); startAuctionLoop(); renderAuctions(); toast("Suit listed for Auction.");
   }
 
@@ -880,7 +953,7 @@
     let toList = candidates.slice(0, available);
     toList.forEach(s => {
       let idx = State.hangar.findIndex(x => x.uid === s.uid); State.hangar.splice(idx, 1);
-      State.auctions.push({ suit: s, baseVal: s.value, timer: 150, currentBid: Math.floor(s.value * 0.33), log: [] });
+      State.auctions.push({ suit: s, baseVal: s.value, timer: 20.0, currentBid: Math.floor(s.value * 0.90), log: [] });
     });
     updateHUD(); renderHangar(); startAuctionLoop(); renderAuctions(); toast("Auction slots filled.");
   }
@@ -901,31 +974,47 @@
 
     let needsRender = false;
     for(let i = State.auctions.length - 1; i >= 0; i--) {
-      let a = State.auctions[i]; a.timer--;
+      let a = State.auctions[i]; 
+      a.timer -= 0.1;
+      needsRender = true;
 
-      if(Math.random() < 0.12) {
-        let faction = FACTIONS[Math.floor(Math.random() * FACTIONS.length)]; let mult = 1.05 + (Math.random() * 0.25);
-        if(Math.random() < 0.03) { mult = 2.0 + (Math.random() * 8.0); a.log.push(`<span style="color:var(--term-red)">[FLASH] ${faction} spikes bid!</span>`); }
-        if(a.suit.tierIndex >= 7 && Math.random() < 0.01) { mult = 10.0 + (Math.random() * 30.0); a.log.push(`<span style="color:var(--term-gold)">[WAR] Syndicate war erupted!</span>`); }
+      if(a.timer > 0 && Math.random() < 0.10) {
+          let faction = FACTIONS[Math.floor(Math.random() * FACTIONS.length)]; 
+          let mult = 1.05 + (Math.random() * 0.10); 
+          
+          if(Math.random() < 0.015) { 
+              mult = 2.0 + (Math.random() * 18.0); 
+              a.log.push(`<span style="color:var(--term-purple);">[BID WAR] Spike multiplier!</span>`);
+          }
 
-        a.currentBid = Math.floor(a.currentBid * mult);
-        a.log.push(`<span style="color:var(--term-cyan)">[${faction}] bids CR ${fmt(a.currentBid)}</span>`);
-        if(a.log.length > 3) a.log.shift(); needsRender = true;
+          let newBid = Math.floor(a.currentBid * mult);
+          if(newBid <= a.currentBid) newBid = a.currentBid + 1;
+          a.currentBid = newBid;
+          
+          a.log.push(`<span style="color:var(--term-cyan);">[${faction}] bids CR ${fmt(a.currentBid)}</span>`);
+          if(a.log.length > 3) a.log.shift();
+
+          if(a.timer <= 1.0) {
+              a.timer = 3.0;
+              a.log.push(`<span style="color:var(--term-red);">[OVERTIME] Timer reset to 3s!</span>`);
+          }
       }
 
       if(a.timer <= 0) {
         State.credits += a.currentBid; toast(`SOLD: ${a.suit.name} for +CR ${fmt(a.currentBid)}!`);
-        State.auctions.splice(i, 1); needsRender = true; updateHUD();
+        State.auctions.splice(i, 1); updateHUD();
       }
     }
-    if(needsRender || State.auctions.length > 0) renderAuctions();
+    if(needsRender && document.getElementById('tab-auction').classList.contains('active')) {
+        renderAuctions();
+    }
   }
 
   function renderAuctions() {
     const board = document.getElementById('auction-board');
     document.getElementById('auction-count').innerText = State.auctions.length; board.innerHTML = '';
     State.auctions.forEach((a) => {
-      let pct = (a.timer / 150) * 100; let htmlLog = a.log.map(l => `<div>${l}</div>`).join('');
+      let pct = (a.timer / 20.0) * 100; let htmlLog = a.log.map(l => `<div>${l}</div>`).join('');
       board.innerHTML += `
         <div class="auction-slot">
           <div style="display:flex; justify-content:space-between; align-items:flex-end;">
@@ -935,7 +1024,7 @@
               <div style="font-size:10px; color:var(--term-purple); font-weight:bold; margin-top:2px;">BASE VAL: CR ${fmt(a.baseVal)}</div>
             </div>
             <div style="text-align:right;">
-              <div style="font-size:8px; color:var(--text-dim); text-transform:uppercase;">CURRENT BID:</div>
+              <div style="font-size:9px; color:var(--text-dim); font-weight:bold;">BID [${a.timer.toFixed(1)}s]</div>
               <div style="font-size:14px; font-weight:bold; color:var(--term-green);">CR ${fmt(a.currentBid)}</div>
             </div>
           </div>
@@ -1036,7 +1125,7 @@
   function initUI() {
     const tGrid = document.getElementById('tier-breakdown-grid');
     TIERS.forEach(t => { tGrid.innerHTML += `<div style="background:#000; border:1px solid ${t.color}; padding:6px;"><span style="color:${t.color}; font-weight:bold;">${t.name}</span><br><span style="color:var(--text-dim);">Min PWR: ${fmt(t.minPower)}</span></div>`; });
-    rollBracketSuit(0, false); updateHUD(); renderCampaign(); renderMarket();
+    rollBracketSuit(0, false); updateHUD(); renderCampaign(); renderMarket(); startAuctionLoop();
   }
   initUI();
 </script>
